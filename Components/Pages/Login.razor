@@ -1,0 +1,64 @@
+﻿@page "/login"
+@using FitnessPortal.Data.Entities
+@using FitnessPortal.Authentication
+@using FitnessPortal.Services
+@using MudBlazor
+
+@inject IUserAccountService UserAccountService
+@inject ISnackbar SnackBar
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Login</PageTitle>
+
+<EditForm Model="@model" OnValidSubmit="Authenticate">
+	<MudGrid Class="justify-center">
+		<MudItem md="5">
+			<MudContainer>
+				<MudCard>
+					<MudCardHeader>
+						<MudText Typo="Typo.h2">Login</MudText>
+					</MudCardHeader>
+
+					<MudCardContent>
+						<DataAnnotationsValidator />
+
+						<MudTextField @bind-Value="model.UserName" Label="Username" Required="true" />
+
+						<MudTextField @bind-Value="model.Password" InputType="InputType.Password" Label="Password" Required="true" />
+					</MudCardContent>
+					<MudCardActions>
+						<MudButton Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Button" Href="/register" StartIcon="@Icons.Filled.AppRegistration">Register</MudButton>
+						<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="ml-auto">Login</MudButton>
+					</MudCardActions>
+				</MudCard>
+			</MudContainer>
+		</MudItem>
+	</MudGrid>
+
+</EditForm>
+
+
+@code {
+	User model = new User();
+	private async void Authenticate()
+	{
+		var account = await UserAccountService.Login(model);
+		if (account == null)
+		{
+			SnackBar.Add("Invalid username or password", Severity.Error);
+			return;
+		}
+
+		var customeAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+		await customeAuthStateProvider.AuthenticateUser(new UserSession
+			{
+				ID = account.ID,
+				Name = account.UserName,
+				Role = account.Roles,
+			});
+		NavigationManager.NavigateTo("/", true);
+	}
+}

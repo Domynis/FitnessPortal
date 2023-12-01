@@ -1,0 +1,69 @@
+﻿@page "/register"
+
+@using FitnessPortal.Data.DTOs
+@using FitnessPortal.Data.Entities
+@using FitnessPortal.Authentication
+@using FitnessPortal.Services
+@using FitnessPortal.Utils
+
+@inject IUserAccountService UserAccountService
+@inject ISnackbar SnackBar
+
+@inject NavigationManager NavigationManager
+
+<PageTitle>Register</PageTitle>
+
+<EditForm Model="@model" OnValidSubmit="RegisterUser">
+	<MudGrid Class="justify-center">
+		<MudItem md="5">
+			<MudContainer>
+				<MudCard>
+					<MudCardHeader>
+						<MudText Typo="Typo.h2">Register</MudText>
+					</MudCardHeader>
+
+					<MudCardContent>
+						<DataAnnotationsValidator/>
+						<MudTextField @bind-Value="model.UserName" Label="UserName" Required="true" />
+						<MudTextField @bind-Value="model.Password" Label="Password" Required="true" InputType="InputType.Password" />
+						<MudTextField @bind-Value="model.FirstName" Label="FirstName" Required="true"/>
+						<MudTextField @bind-Value="model.LastName" Label="LastName" Required="true" />
+						<MudSelect @bind-Value="model.Gender" Label="Gender">
+							<MudSelectItem Value="@("Male")" />
+							<MudSelectItem Value="@("Female")" />
+						</MudSelect>
+						<MudNumericField @bind-Value="model.Age" Label="Age" Min="0" Max="127"/>
+						<MudNumericField @bind-Value="model.Weight" Label="Weight (kg)" Min="0" Max="500"/>
+						<MudNumericField @bind-Value="model.Height" Label="Height (cm)" Min="0" Max="300" />
+						<MudNumericField @bind-Value="model.KCalGoal" Label="KCal Goal" Min="0"/>
+						<MudSelect @bind-Value="selectedRole" Label="Role" Required="true" >
+							<MudSelectItem Value="@("User")"  />
+							<MudSelectItem Value="@("Admin")" />
+						</MudSelect> 
+					</MudCardContent>
+					<MudCardActions>
+						<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="mx-auto">Register</MudButton>
+					</MudCardActions>
+				</MudCard>
+			</MudContainer>
+		</MudItem>
+	</MudGrid>
+</EditForm>
+
+
+@code {
+	// [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+	bool isEdit = false;
+	private string selectedRole = string.Empty;
+	UserDTO model = new UserDTO();
+	private  void RegisterUser()
+	{
+		if (!isEdit)
+		{
+			model.UserID = Guid.Empty; model.UserDetailsID = Guid.Empty;
+		}
+		model.Roles = selectedRole.Equals("User") ? 0 : 1;
+		UserAccountService.AddOrUpdateUserDTO(model);
+		NavigationManager.NavigateTo("/login");
+	}
+}

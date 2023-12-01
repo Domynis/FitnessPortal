@@ -1,9 +1,42 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navigationManager
 
-<MudThemeProvider />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
-<div class="page">
+
+<MudLayout>
+	<MudAppBar Elevation="0" Dense="true">
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
+		<MudText Typo="Typo.h5">Fitness Portal</MudText>
+		<MudSpacer />
+		@* <AuthorizeView>
+		<Authorized>
+		<MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopRight">
+		<ActivatorContent>
+		<MudAvatar Color="Color.Success">@context.User.Identity.Name.Substring(0, 1).ToUpper()</MudAvatar>
+		</ActivatorContent>
+		<ChildContent>
+		<MudMenuItem OnClick="()=>NavigateToProfile()">Profile</MudMenuItem>
+		<MudMenuItem OnClick="()=>Logout()">Sign Out</MudMenuItem>
+		</ChildContent>
+		</MudMenu>
+		</Authorized>
+		</AuthorizeView> *@
+		<MudToggleIconButton @bind-Toggled="@_isDarkMode" Color="Color.Inherit" Icon="@Icons.TwoTone.DarkMode" ToggledIcon="@Icons.Filled.LightMode" />
+	</MudAppBar>
+	@* <MudDrawer>
+	<NavMenu />
+	</MudDrawer> *@
+
+	<MudMainContent>
+		<MudContainer MaxWidth="MaxWidth.Large">
+			@Body
+		</MudContainer>
+	</MudMainContent>
+</MudLayout>
+
+@* <div class="page">
 	<div class="sidebar">
 		<NavMenu />
 	</div>
@@ -18,9 +51,33 @@
 		</article>
 	</main>
 </div>
-
+ *@
 <div id="blazor-error-ui">
 	An unhandled error has occurred.
 	<a href="" class="reload">Reload</a>
 	<a class="dismiss">🗙</a>
 </div>
+
+
+
+@code {
+	[CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+	protected async override Task OnInitializedAsync()
+	{
+		base.OnInitialized();
+		var user = (await AuthStat).User;
+		if (!user.Identity.IsAuthenticated)
+		{
+			navigationManager.NavigateTo("/login");
+		}
+	}
+
+	public bool _isDarkMode = false;
+	public MudTheme _theme = new MudTheme
+		{
+			Palette = new Palette
+			{
+				AppbarBackground = Colors.Indigo.Default,
+			}
+		};
+}

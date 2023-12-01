@@ -1,9 +1,15 @@
 ﻿@page "/"
+@* @attribute [Authorize] *@
 
 <PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
- 
-<MudButton Variant="Variant.Filled" Color="Color.Primary">Primaries</MudButton>
+<AuthorizeView>
+    <Authorized>
+        <p>Hello!</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You're not authorized.</p>
+    </NotAuthorized>
+    <Authorizing>
+        <p>Authorizing</p>
+    </Authorizing>
+</AuthorizeView>
