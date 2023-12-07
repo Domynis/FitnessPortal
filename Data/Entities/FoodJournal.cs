@@ -18,8 +18,8 @@ namespace FitnessPortal.Data.Entities
         public Guid UserID { get; set; }
         public User User { get; set; } = null!;
 
-        [ForeignKey("FoodID")]
-        public Guid FoodID { get; set; }
+        [ForeignKey("FoodNutritionID")]
+        public Guid FoodNutritionID { get; set; }
         public FoodNutrition FoodNutrition { get; set; } = null!;
     }
 }

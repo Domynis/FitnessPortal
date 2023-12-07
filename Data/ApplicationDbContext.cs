@@ -16,6 +16,9 @@ namespace FitnessPortal.Data
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserDetails> UsersDetails { get; set; }
+        public virtual DbSet<FoodNutrition> FoodsNutrition { get; set; }
+        public virtual DbSet<FoodJournal> FoodsJournal { get; set; }
+        public virtual DbSet<SleepJournal> SleepJournal { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null)

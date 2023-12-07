@@ -52,9 +52,8 @@
 
 
 @code {
-	// [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
 	bool isEdit = false;
-	private string selectedRole = string.Empty;
+	private string selectedRole = "User";
 	UserDTO model = new UserDTO();
 	private  void RegisterUser()
 	{
@@ -62,7 +61,8 @@
 		{
 			model.UserID = Guid.Empty; model.UserDetailsID = Guid.Empty;
 		}
-		model.Roles = selectedRole.Equals("User") ? 0 : 1;
+
+		model.Roles = selectedRole.Equals("Admin") ? 1 : 0;
 		UserAccountService.AddOrUpdateUserDTO(model);
 		NavigationManager.NavigateTo("/login");
 	}

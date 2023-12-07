@@ -15,5 +15,19 @@
 				return "Invalid Index";
 			}
 		}
+
+		public enum FoodCategories { Meat, Vegetable, Fruit, Cereal, Dairy, Nuts}
+
+		public static string GetFoodCategoryString(this int index)
+		{
+			if (Enum.IsDefined(typeof(FoodCategories), index))
+			{
+				return ((FoodCategories)index).ToString();
+			}
+			else
+			{
+				return "Invalid Index";
+			}
+		}
 	}
 }

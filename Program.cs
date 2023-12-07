@@ -23,13 +23,15 @@ builder.Services.AddAuthorization();
 builder.Services.AddOptions();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
+builder.Services.AddScoped<IFoodService, FoodService>();
+builder.Services.AddScoped<IFoodJournalService, FoodJournalService>();
 builder.Services.AddCascadingAuthenticationState();
 //builder.Services.AddAuthentication(options =>
 //{
 //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 //})
 //.AddCookie();
-
+builder.Services.AddAuthentication();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 try

@@ -3,6 +3,8 @@ using FitnessPortal.Data.DTOs;
 using FitnessPortal.Data.Entities;
 using FitnessPortal.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+
 
 namespace FitnessPortal.Services
 {
@@ -56,39 +58,52 @@ namespace FitnessPortal.Services
 
 		public void AddOrUpdateUserDTO(UserDTO userDTO)
 		{
-			User user = new User();
-			user.ID = userDTO.UserID;
-			user.UserName = userDTO.UserName;
-			user.Password = userDTO.Password;
-			user.Roles = userDTO.Roles;
+			using (SHA256 sha256Hash = SHA256.Create())
+			{
+				userDTO.Password = PasswordHasher.GetHash(sha256Hash, userDTO.Password);
+			}
+
+			User user = new()
+			{
+				ID = userDTO.UserID,
+				UserName = userDTO.UserName,
+				Password = userDTO.Password,
+				Roles = userDTO.Roles
+			};
 			var modelUser = AddOrUpdateUser(user);
 
-			UserDetails userDetails = new UserDetails();
-			userDetails.ID = userDTO.UserDetailsID;
-			userDetails.UserID = modelUser.ID;
-			userDetails.FirstName = userDTO.FirstName;
-			userDetails.LastName = userDTO.LastName;
-			userDetails.Gender = userDTO.Gender;
-			userDetails.Age = userDTO.Age;
-			userDetails.Weight = userDTO.Weight;
-			userDetails.Height = userDTO.Height;
-			userDetails.BMI = (userDTO.Weight != null && userDTO.Height != null) ? BMICalculator.calc((float)userDTO.Height, (float)userDTO.Weight) : null;
-			userDetails.KCalGoal = userDTO.KCalGoal;
+			UserDetails userDetails = new()
+			{
+				ID = userDTO.UserDetailsID,
+				UserID = modelUser.ID,
+				FirstName = userDTO.FirstName,
+				LastName = userDTO.LastName,
+				Gender = userDTO.Gender,
+				Age = userDTO.Age,
+				Weight = userDTO.Weight,
+				Height = userDTO.Height,
+				BMI = (userDTO.Weight != null && userDTO.Height != null) ? BMICalculator.Calc((float)userDTO.Height, (float)userDTO.Weight) : null,
+				KCalGoal = userDTO.KCalGoal
+			};
 			AddOrUpdateUserDetails(userDetails);
 		}
 
 		public async Task<User?> GetUserDetails(User user)
 		{
-			var dbUser = await _context.Users.Include(x => x.UserDetails).FirstOrDefaultAsync(x => x.ID == user.ID); 
+			var dbUser = await _context.Users.Include(x => x.UserDetails).FirstOrDefaultAsync(x => x.ID == user.ID);
 			return dbUser;
 		}
 
-
-
 		public async Task<User?> Login(User user)
 		{
-			var dbUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Password == user.Password);
-			return dbUser;
+
+			using (SHA256 sha256Hash = SHA256.Create())
+			{
+				var dbUser = await _context.Users.FirstOrDefaultAsync(
+					x => x.UserName == user.UserName &&
+					x.Password.Equals(PasswordHasher.GetHash(sha256Hash, user.Password)));
+				return dbUser;
+			}
 		}
 	}
 }

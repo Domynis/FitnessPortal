@@ -43,15 +43,24 @@
 
 @code {
 	User model = new User();
+
+	private EditContext editContext;
+	protected override void OnInitialized()
+	{
+		editContext = new EditContext(model);
+	}
+
 	private async void Authenticate()
 	{
 		var account = await UserAccountService.Login(model);
+
 		if (account == null)
 		{
+			// model.Password = string.Empty;
+			// StateHasChanged();
 			SnackBar.Add("Invalid username or password", Severity.Error);
 			return;
 		}
-
 		var customeAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
 		await customeAuthStateProvider.AuthenticateUser(new UserSession
 			{

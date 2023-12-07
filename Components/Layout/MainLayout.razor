@@ -10,19 +10,6 @@
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
 		<MudText Typo="Typo.h5">Fitness Portal</MudText>
 		<MudSpacer />
-		@* <AuthorizeView>
-		<Authorized>
-		<MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopRight">
-		<ActivatorContent>
-		<MudAvatar Color="Color.Success">@context.User.Identity.Name.Substring(0, 1).ToUpper()</MudAvatar>
-		</ActivatorContent>
-		<ChildContent>
-		<MudMenuItem OnClick="()=>NavigateToProfile()">Profile</MudMenuItem>
-		<MudMenuItem OnClick="()=>Logout()">Sign Out</MudMenuItem>
-		</ChildContent>
-		</MudMenu>
-		</Authorized>
-		</AuthorizeView> *@
 		<MudToggleIconButton @bind-Toggled="@_isDarkMode" Color="Color.Inherit" Icon="@Icons.TwoTone.DarkMode" ToggledIcon="@Icons.Filled.LightMode" />
 	</MudAppBar>
 	@* <MudDrawer>
@@ -36,22 +23,7 @@
 	</MudMainContent>
 </MudLayout>
 
-@* <div class="page">
-	<div class="sidebar">
-		<NavMenu />
-	</div>
 
-	<main>
-		<div class="top-row px-4">
-			<a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-		</div>
-
-		<article class="content px-4">
-			@Body
-		</article>
-	</main>
-</div>
- *@
 <div id="blazor-error-ui">
 	An unhandled error has occurred.
 	<a href="" class="reload">Reload</a>
