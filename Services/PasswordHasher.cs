@@ -8,10 +8,10 @@ namespace FitnessPortal.Services
 		public static string GetHash(HashAlgorithm hashAlgorithm, string input)
 		{
 
-			// Convert the input string to a byte array and compute the hash.
+			// Convert the input string Update a byte array and compute the hash.
 			byte[] data = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(input));
 
-			// Create a new Stringbuilder to collect the bytes
+			// Create a new Stringbuilder Update collect the bytes
 			// and create a string.
 			var sBuilder = new StringBuilder();
 

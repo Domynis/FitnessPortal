@@ -14,9 +14,9 @@
 <PageTitle>Home</PageTitle>
 <AuthorizeView Context="AuthContext">
 	<Authorized>
-		<EditForm Model="@foodDTO" OnValidSubmit="SubmitFoodEntry">
-			<MudGrid Justify="Justify.Center">
-				<MudItem md="5">
+		<MudGrid Justify="Justify.Center">
+			<MudItem md="5">
+				<EditForm Model="@foodDTO" OnValidSubmit="SubmitFoodEntry">
 					<MudContainer>
 						<MudCard>
 							<MudCardContent>
@@ -29,30 +29,44 @@
 							</MudCardContent>
 							<MudCardActions>
 								<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">Submit to journal</MudButton>
+								@if (foodDTO.ID != Guid.Empty)
+								{
+									<MudButton class="ml-auto" Variant="Variant.Filled" Color="Color.Warning" ButtonType="ButtonType.Button" OnClick="ResetForm">Reset</MudButton>
+								}
 							</MudCardActions>
 						</MudCard>
 					</MudContainer>
+				</EditForm>
+			</MudItem>
+			<MudItem>
+				<MudDatePicker Label="Start Date" Date="@start" DateChanged="OnUpdateStartDate" />
+				<MudDatePicker Label="End Date" Date="@end" DateChanged="OnUpdateEndDate" />
+				<MudDataGrid Items="@foodDTOEntryList">
+					<Columns>
+						<PropertyColumn Property="x => x.DateString" Title="Day" />
+						<PropertyColumn Property="x => x.FoodName" Title="Name" />
+						<PropertyColumn Property="x => x.KcalTotal" Title="Kcal" />
+						<TemplateColumn Sortable="false">
+							<CellTemplate>
+								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => foodDTO = @context.Item)" />
+							</CellTemplate>
+						</TemplateColumn>
+						<TemplateColumn Sortable="false">
+							<CellTemplate>
+								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" 
+								OnClick="@(() => RemoveTableEntry(@context.Item))" />
+							</CellTemplate>
+						</TemplateColumn>
+					</Columns>
+				</MudDataGrid>
+			</MudItem>
+			<MudItem>
+				<MudText Align="Align.Center" Typo="Typo.h6">Today's kcal consumption</MudText>
+				<MudChart ChartType="ChartType.Pie" InputData="@data" InputLabels="@labels"
+						  Width="300px" Height="300px" />
+				<MudText Align="Align.Center" Typo="Typo.h6" Color="@kcalTextColor">@kcalConsumed / @kcalGoal</MudText>
 				</MudItem>
-				<MudItem>
-					<MudDatePicker Label="Start Date" Date="@start" DateChanged="OnUpdateStartDate" />
-					<MudDatePicker Label="End Date" Date="@end" DateChanged="OnUpdateEndDate" />
-					<MudDataGrid Items="@foodJournalEntryList" ReadOnly="false" EditMode="DataGridEditMode.Form"
-								 EditTrigger="DataGridEditTrigger.OnRowClick">
-						<Columns>
-							<PropertyColumn Property="x => x.Date.ToShortDateString()" Title="Day" />
-							<PropertyColumn Property="x => x.FoodNutrition.Name" Title="Name" />
-							<PropertyColumn Property="x => x.KcalTotal" Title="Kcal" />
-						</Columns>
-					</MudDataGrid>
-				</MudItem>
-				<MudItem>
-					<MudText Align="Align.Center" Typo="Typo.h6">Today's kcal consumption</MudText>
-					<MudChart ChartType="ChartType.Pie" InputData="@data" InputLabels="@labels"
-							  Width="300px" Height="300px" />
-					<MudText Align="Align.Center" Typo="Typo.h6" Color="@kcalTextColor">@kcalConsumed / @kcalGoal</MudText>
-					</MudItem>
-				</MudGrid>
-			</EditForm>
+			</MudGrid>
 		</Authorized>
 		<NotAuthorized>
 			<p>You're not authorized.</p>
@@ -79,9 +93,10 @@
 	private bool coerceText;
 	private bool coerceValue;
 	List<FoodNutrition> foodList = new();
-	List<FoodJournal> foodJournalEntryList = new();
+	List<FoodDTO> foodDTOEntryList = new();
 
 	private Color kcalTextColor = Color.Default;
+	private Guid SessionUserID = Guid.Empty;
 
 
 	protected override async Task OnInitializedAsync()
@@ -94,14 +109,14 @@
 			if (user?.Identity is not null && user.Identity.IsAuthenticated)
 			{
 				foodDTO.UserID = Guid.Parse(user.Claims.ElementAt(2).Value);
+				SessionUserID = foodDTO.UserID;	
 				var userWithDetails = await UserAccountService.GetUserDetails(new User
 					{
 						ID = foodDTO.UserID,
 					});
 				kcalGoal = (float)userWithDetails.UserDetails.KCalGoal;
 
-				UpdateFoodJournalTableData();
-				UpdateTodayPieChart();
+				UpdatePage();
 			}
 		}
 	}
@@ -113,7 +128,12 @@
 			SnackBar.Add("No food type chosen!", Severity.Error);
 			return;
 		}
-		FoodJournalService.AddFoodJournalEntry(foodDTO);
+		FoodJournalService.AddOrUpdateFoodJournalEntry(foodDTO);
+		UpdatePage();
+	}
+
+	private void UpdatePage()
+	{
 		UpdateFoodJournalTableData();
 		UpdateTodayPieChart();
 	}
@@ -132,12 +152,13 @@
 
 	private void UpdateFoodJournalTableData()
 	{
-		foodJournalEntryList = FoodJournalService.GetFoodJournals(start ?? DateTime.Today, end ?? DateTime.Today);
+		foodDTOEntryList = FoodJournalService.GetFoodJournals(start ?? DateTime.Today, end ?? DateTime.Today,
+		SessionUserID);
 	}
 
 	private void UpdateTodayPieChart()
 	{
-		var tupleList = FoodJournalService.GetTodayFoodJournalByCategoriesAndKcal();
+		var tupleList = FoodJournalService.GetTodayFoodJournalByCategoriesAndKcal(SessionUserID);
 		kcalConsumed = tupleList.Sum(x => x.Item2);
 		float kcalLeft = kcalGoal - kcalConsumed;
 		int newSize = tupleList.Count;
@@ -171,5 +192,21 @@
 		data = newData;
 		labels = newLabel;
 		StateHasChanged();
+	}
+
+	private void ResetForm()
+	{
+		foodDTO = new();
+		foodDTO.UserID = SessionUserID;
+	}
+
+	private void RemoveTableEntry(FoodDTO foodDTOToRemove)
+	{
+		FoodJournalService.RemoveFoodJournalEntry(foodDTOToRemove);
+		if(this.foodDTO.ID.Equals(foodDTOToRemove.ID))
+		{
+			ResetForm();
+		}
+		UpdatePage();
 	}
 }

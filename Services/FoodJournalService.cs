@@ -14,7 +14,7 @@ namespace FitnessPortal.Services
 			_context = context;
 			_context.Database.EnsureCreated();
 		}
-		public void AddFoodJournalEntry(FoodDTO foodDTO)
+		public void AddOrUpdateFoodJournalEntry(FoodDTO foodDTO)
 		{
 			FoodNutrition foodNutrition = _context.FoodsNutrition.FirstOrDefault(x => x.ID == foodDTO.Food.ID);
 
@@ -22,33 +22,31 @@ namespace FitnessPortal.Services
 			{
 				throw new Exception("Food with ID " + foodDTO.Food.ID + " does not exist.");
 			}
+			//foodDTO.Food = foodNutrition;
 
-			FoodJournal model = new()
+			var model = _context.FoodsJournal.FirstOrDefault(x => x.ID == foodDTO.ID) ?? new();
+			foodDTO.Update(model);
+			if (model.ID == Guid.Empty)
 			{
-				ID = Guid.Empty,
-				UserID = foodDTO.UserID,
-				Quantity = foodDTO.Quantity,
-				Date = foodDTO.Date ?? DateTime.Today,
-				FoodNutritionID = foodNutrition.ID,
-				KcalTotal = KcalCalculator.Calc(foodDTO.Food.Kcal, foodDTO.Quantity),
-			};
-
-			_context.FoodsJournal.Add(model);
-
+				_context.FoodsJournal.Add(model);
+			}
 			_context.SaveChanges();
 		}
 
-		public List<FoodJournal> GetFoodJournals(DateTime startDate, DateTime endDate)
+		public List<FoodDTO> GetFoodJournals(DateTime startDate, DateTime endDate, Guid UserID)
 		{
-			var result = _context.FoodsJournal.Include(x => x.FoodNutrition).Where(x => x.Date.Date >= startDate.Date && x.Date.Date <= endDate.Date).OrderBy(x => x.Date).ToList();
+			var result = _context.FoodsJournal.Include(x => x.FoodNutrition)
+				.Where(x => x.Date.Date >= startDate.Date && x.Date.Date <= endDate.Date 
+				&& x.UserID.Equals(UserID))
+				.OrderBy(x => x.Date).Select(x => FoodDTO.From(x)).ToList();
 			return result;
 		}
 
-		public List<Tuple<int, float>> GetTodayFoodJournalByCategoriesAndKcal()
+		public List<Tuple<int, float>> GetTodayFoodJournalByCategoriesAndKcal(Guid UserID)
 		{
 			var result = from fj in _context.FoodsJournal
 						 join fn in _context.FoodsNutrition on fj.FoodNutritionID equals fn.ID
-						 where fj.Date == DateTime.Today
+						 where fj.Date == DateTime.Today && fj.UserID == UserID
 						 group fj by fn.Category
 						 into g
 						 select new Tuple<int, float>( g.Key, g.Sum(x => x.KcalTotal) )
@@ -57,6 +55,16 @@ namespace FitnessPortal.Services
 			var listResult = result.ToList();
 
 			return listResult;
+		}
+
+		public void RemoveFoodJournalEntry(FoodDTO foodDTO)
+		{
+			var model = _context.FoodsJournal.FirstOrDefault(x => x.ID == foodDTO.ID);
+			if (model != null)
+			{
+				_context.Remove(model);
+				_context.SaveChanges();
+			}
 		}
 	}
 }
