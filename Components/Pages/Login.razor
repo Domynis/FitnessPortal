@@ -10,64 +10,82 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 
-
 <PageTitle>Login</PageTitle>
 
 <EditForm Model="@model" OnValidSubmit="Authenticate">
-	<MudGrid Class="justify-center">
-		<MudItem md="5">
-			<MudContainer>
-				<MudCard>
-					<MudCardHeader>
-						<MudText Typo="Typo.h2">Login</MudText>
-					</MudCardHeader>
+    <!-- MudBlazor Grid to center the login card -->
+    <MudGrid Class="justify-center">
+        <MudItem md="5">
+            <MudContainer>
+                <!-- MudBlazor Card for the login form -->
+                <MudCard>
+                    <MudCardHeader>
+                        <!-- MudBlazor Text for the login header -->
+                        <MudText Typo="Typo.h2">Login</MudText>
+                    </MudCardHeader>
 
-					<MudCardContent>
-						<DataAnnotationsValidator />
+                    <MudCardContent>
+                        <!-- DataAnnotationsValidator for validating form data -->
+                        <DataAnnotationsValidator />
 
-						<MudTextField @bind-Value="model.UserName" Label="Username" Required="true" />
+                        <!-- MudBlazor TextField for entering the username -->
+                        <MudTextField @bind-Value="model.UserName" Label="Username" Required="true" />
 
-						<MudTextField @bind-Value="model.Password" InputType="InputType.Password" Label="Password" Required="true" />
-					</MudCardContent>
-					<MudCardActions>
-						<MudButton Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Button" Href="/register" StartIcon="@Icons.Material.Filled.AppRegistration">Register</MudButton>
-						<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="ml-auto">Login</MudButton>
-					</MudCardActions>
-				</MudCard>
-			</MudContainer>
-		</MudItem>
-	</MudGrid>
+                        <!-- MudBlazor TextField for entering the password -->
+                        <MudTextField @bind-Value="model.Password" InputType="InputType.Password" Label="Password" Required="true" />
+                    </MudCardContent>
 
+                    <MudCardActions>
+                        <!-- MudBlazor Button to navigate to the registration page -->
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Button" Href="/register" StartIcon="@Icons.Material.Filled.AppRegistration">Register</MudButton>
+
+                        <!-- MudBlazor Button to submit the login form -->
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="ml-auto">Login</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudContainer>
+        </MudItem>
+    </MudGrid>
 </EditForm>
 
-
 @code {
-	User model = new User();
+    // User model for capturing login data
+    User model = new User();
 
-	private EditContext editContext;
-	protected override void OnInitialized()
-	{
-		editContext = new EditContext(model);
-	}
+    // EditContext for handling form validation
+    private EditContext editContext;
 
-	private async void Authenticate()
-	{
-		var account = await UserAccountService.Login(model);
+    // Method called when the component is initialized
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(model);
+    }
 
-		if (account == null)
-		{
-			// model.Password = string.Empty;
-			// StateHasChanged();
-			SnackBar.Add("Invalid username or password", Severity.Error);
-			return;
-		}
-		var customeAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-		await customeAuthStateProvider.AuthenticateUser(new UserSession
-			{
-				ID = account.ID,
-				Name = account.UserName,
-				Role = account.Role,
-			});
-		NavigationManager.NavigateTo("/", true);
-	}
+    // Method to authenticate the user on form submission
+    private async void Authenticate()
+    {
+        // Attempt to login using the provided credentials
+        var account = await UserAccountService.Login(model);
+
+        if (account == null)
+        {
+            // Display an error message if login fails
+            SnackBar.Add("Invalid username or password", Severity.Error);
+            return;
+        }
+
+        // Access the custom authentication state provider for user authentication
+        var customAuthProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+
+        // Authenticate the user and set the user session
+        await customAuthProvider.AuthenticateUser(new UserSession
+            {
+                ID = account.ID,
+                Name = account.UserName,
+                Role = account.Role,
+            });
+
+        // Navigate to the home page upon successful login
+        NavigationManager.NavigateTo("/", true);
+    }
 }

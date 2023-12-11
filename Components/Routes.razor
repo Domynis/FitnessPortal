@@ -1,13 +1,20 @@
 ﻿<Router AppAssembly="@typeof(Program).Assembly">
-	<Found Context="routeData">
-		<AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
-			<Authorizing>
-				Routes authorizing
-			</Authorizing>
-			<NotAuthorized>
-				<Login/>
-			</NotAuthorized>
-		</AuthorizeRouteView>
-		<FocusOnNavigate RouteData="@routeData" Selector="h1" />
-	</Found>
+    <!-- Found section for handling route data -->
+    <Found Context="routeData">
+        <!-- AuthorizeRouteView for handling authorized routes with default layout -->
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+            <!-- Authorizing section for displaying authorization in progress message -->
+            <Authorizing>
+                Routes authorizing
+            </Authorizing>
+
+            <!-- NotAuthorized section for redirecting to the login page if not authorized -->
+            <NotAuthorized>
+                <Login />
+            </NotAuthorized>
+        </AuthorizeRouteView>
+
+        <!-- FocusOnNavigate for focusing on the 'h1' element after navigation -->
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
 </Router>

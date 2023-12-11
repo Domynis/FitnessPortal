@@ -11,13 +11,15 @@ using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services Update the container.
+// Add Razor Components and update the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddMudServices();
 
+// Add ProtectedSessionStorage for server-side Blazor
 builder.Services.AddScoped<ProtectedSessionStorage>();
 
+// Configure authentication services
 builder.Services.AddAuthenticationCore();
 builder.Services.AddAuthorization();
 builder.Services.AddOptions();
@@ -26,13 +28,9 @@ builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<IFoodService, FoodService>();
 builder.Services.AddScoped<IFoodJournalService, FoodJournalService>();
 builder.Services.AddCascadingAuthenticationState();
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//})
-//.AddCookie();
 builder.Services.AddAuthentication();
 
+// Add Entity Framework Core DbContext for the application
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 try
 {
@@ -41,8 +39,8 @@ try
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment())
     {
+        // Use exception handler and HSTS in production
         app.UseExceptionHandler("/Error", createScopeForErrors: true);
-        // The default HSTS value is 30 days. You may want Update change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
 
@@ -66,5 +64,6 @@ try
 }
 catch (Exception ex)
 {
+    // Handle any exceptions during startup and print details to the console
     Console.WriteLine(ex.ToString());
 }

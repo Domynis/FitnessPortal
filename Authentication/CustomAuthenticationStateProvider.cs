@@ -5,15 +5,26 @@ using System.Security.Claims;
 
 namespace FitnessPortal.Authentication
 {
+	/// <summary>
+	/// CustomAuthenticationStateProvider class responsible for managing authentication state. 
+	/// </summary>
 	public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 	{
 		private readonly ProtectedSessionStorage _sessionStorage;
 		private readonly ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
-        //private bool authenticationStateChanged = false;
-        public CustomAuthenticationStateProvider(ProtectedSessionStorage sessionStorage)
+
+		/// <summary>
+		/// Constructor for CustomAuthenticationStateProvider.
+		/// </summary>
+		/// <param name="sessionStorage">ProtectedSessionStorage instance for storing user session data.</param>
+		public CustomAuthenticationStateProvider(ProtectedSessionStorage sessionStorage)
 		{
 			_sessionStorage = sessionStorage;
 		}
+		/// <summary>
+		/// Gets the authentication state asynchronously based on the user session.
+		/// </summary>
+		/// <returns>Task containing the AuthenticationState.</returns>
 		public override async Task<AuthenticationState> GetAuthenticationStateAsync()
 		{
             try
@@ -44,13 +55,18 @@ namespace FitnessPortal.Authentication
 				return await Task.FromResult(new AuthenticationState(_anonymous));
 			}
 		}
-
+		/// <summary>
+		/// Authenticates the user by updating the user session and notifying of the authentication state change.
+		/// </summary>
+		/// <param name="userSession">UserSession object representing the user's session.</param>
 		public async Task AuthenticateUser(UserSession? userSession)
 		{
 			ClaimsPrincipal claimsPrincipal;
 			if (userSession != null)
 			{
+				// Set the user session in protected session storage
 				await _sessionStorage.SetAsync("UserSession", userSession);
+				// Create a ClaimsPrincipal based on the user session data
 				claimsPrincipal = new ClaimsPrincipal(
 						new ClaimsIdentity(
 							new List<Claim>
@@ -62,10 +78,13 @@ namespace FitnessPortal.Authentication
 			}
 			else
 			{
+				// If no user session, delete the session data
 				await _sessionStorage.DeleteAsync("UserSession");
+				// Use the anonymous ClaimsPrincipal
 				claimsPrincipal = _anonymous;
 			}
-            NotifyAuthenticationStateChanged(
+			// Notify of the authentication state change
+			NotifyAuthenticationStateChanged(
 				Task.FromResult(new AuthenticationState(claimsPrincipal)));
 		}
 	}

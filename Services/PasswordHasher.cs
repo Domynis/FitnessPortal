@@ -3,9 +3,18 @@ using System.Text;
 
 namespace FitnessPortal.Services
 {
-	public class PasswordHasher
+    /// <summary>
+    /// Utility class for hashing and verifying passwords.
+    /// </summary>
+    public class PasswordHasher
 	{
-		public static string GetHash(HashAlgorithm hashAlgorithm, string input)
+        /// <summary>
+        /// Computes the hash of the input string using the specified hash algorithm.
+        /// </summary>
+        /// <param name="hashAlgorithm">Hash algorithm to use for hashing.</param>
+        /// <param name="input">Input string to be hashed.</param>
+        /// <returns>Hexadecimal representation of the computed hash.</returns>
+        public static string GetHash(HashAlgorithm hashAlgorithm, string input)
 		{
 
 			// Convert the input string Update a byte array and compute the hash.
@@ -26,8 +35,14 @@ namespace FitnessPortal.Services
 			return sBuilder.ToString();
 		}
 
-		// Verify a hash against a string.
-		public static bool VerifyHash(HashAlgorithm hashAlgorithm, string input, string hash)
+        /// <summary>
+        /// Verifies whether the provided hash matches the hash of the input string.
+        /// </summary>
+        /// <param name="hashAlgorithm">Hash algorithm to use for hashing.</param>
+        /// <param name="input">Input string to be verified.</param>
+        /// <param name="hash">Hash to compare against the computed hash.</param>
+        /// <returns>True if the input string's hash matches the provided hash; otherwise, false.</returns>
+        public static bool VerifyHash(HashAlgorithm hashAlgorithm, string input, string hash)
 		{
 			// Hash the input.
 			var hashOfInput = GetHash(hashAlgorithm, input);
