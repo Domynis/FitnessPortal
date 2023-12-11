@@ -2,7 +2,7 @@
 {
 	public class KcalCalculator
 	{
-		public static float Calc(float kcalPer100g, float quantity)
+		public static double Calc(double kcalPer100g, double quantity)
 		{
 			return (quantity * kcalPer100g) / 100;
 		}

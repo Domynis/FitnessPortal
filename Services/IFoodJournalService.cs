@@ -8,6 +8,6 @@ namespace FitnessPortal.Services
 		void AddOrUpdateFoodJournalEntry(FoodDTO foodDTO);
 		List<FoodDTO> GetFoodJournals(DateTime startDate, DateTime endDate, Guid UserID);
 		void RemoveFoodJournalEntry(FoodDTO foodDTO);
-		public List<Tuple<int, float>> GetTodayFoodJournalByCategoriesAndKcal(Guid UserID);
+		public List<Tuple<int, double>> GetTodayFoodJournalByCategoriesAndKcal(Guid UserID);
 	}
 }

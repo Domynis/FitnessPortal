@@ -2,10 +2,10 @@
 {
 	public class BMICalculator
 	{
-		public static float Calc(float height, float weight)
+		public static double Calc(double height, double weight)
 		{
 			var heightInM = height / 100;
-			return (float)Math.Round(weight / (heightInM * heightInM), 2);
+			return Math.Round(weight / (heightInM * heightInM), 2);
 		}
 	}
 }

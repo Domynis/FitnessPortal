@@ -4,6 +4,7 @@ using FitnessPortal.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessPortal.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231211154240_changedRolesToRole")]
+    partial class changedRolesToRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,11 +37,11 @@ namespace FitnessPortal.Migrations
                     b.Property<Guid>("FoodNutritionID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("KcalTotal")
-                        .HasColumnType("float");
+                    b.Property<float>("KcalTotal")
+                        .HasColumnType("real");
 
-                    b.Property<double>("Quantity")
-                        .HasColumnType("float");
+                    b.Property<float>("Quantity")
+                        .HasColumnType("real");
 
                     b.Property<Guid>("UserID")
                         .HasColumnType("uniqueidentifier");
@@ -61,8 +64,8 @@ namespace FitnessPortal.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
-                    b.Property<double>("Kcal")
-                        .HasColumnType("float");
+                    b.Property<float>("Kcal")
+                        .HasColumnType("real");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -129,8 +132,8 @@ namespace FitnessPortal.Migrations
                     b.Property<int?>("Age")
                         .HasColumnType("int");
 
-                    b.Property<double?>("BMI")
-                        .HasColumnType("float");
+                    b.Property<float?>("BMI")
+                        .HasColumnType("real");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -139,8 +142,8 @@ namespace FitnessPortal.Migrations
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("Height")
-                        .HasColumnType("float");
+                    b.Property<float?>("Height")
+                        .HasColumnType("real");
 
                     b.Property<int?>("KCalGoal")
                         .HasColumnType("int");
@@ -152,8 +155,8 @@ namespace FitnessPortal.Migrations
                     b.Property<Guid>("UserID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double?>("Weight")
-                        .HasColumnType("float");
+                    b.Property<float?>("Weight")
+                        .HasColumnType("real");
 
                     b.HasKey("ID");
 

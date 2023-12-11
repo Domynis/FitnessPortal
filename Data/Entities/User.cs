@@ -12,7 +12,7 @@ namespace FitnessPortal.Data.Entities
         [Required]
         public string Password { get; set; }
         [Required]
-        public int Roles { get; set; }
+        public int Role { get; set; }
         public UserDetails UserDetails { get; set; }
         public List<FoodJournal> FoodJournals { get; set; } = [];
         public List<SleepJournal> SleepJournals { get; set; } = [];

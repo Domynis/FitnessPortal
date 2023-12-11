@@ -8,9 +8,9 @@ namespace FitnessPortal.Data.Entities
         [Key]
         public Guid ID { get; set; }
         [Required]
-        public float Quantity { get; set; }
+        public double Quantity { get; set; }
         [Required]
-        public float KcalTotal { get; set; }
+        public double KcalTotal { get; set; }
         [Required]
         public DateTime Date { get; set; }
 

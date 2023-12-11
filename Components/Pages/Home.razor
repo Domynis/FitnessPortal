@@ -16,82 +16,118 @@
 	<Authorized>
 		<MudGrid Justify="Justify.Center">
 			<MudItem md="5">
-				<EditForm Model="@foodDTO" OnValidSubmit="SubmitFoodEntry">
-					<MudContainer>
-						<MudCard>
-							<MudCardContent>
-								<MudAutocomplete T="FoodNutrition" Label="Enter food" @bind-Value="foodDTO.Food" SearchFunc="@FoodService.GetFoodNutrition"
-												 ResetValueOnEmptyText="@resetValueOnEmptyText"
-												 CoerceText="@coerceText" CoerceValue="@coerceValue"
-												 ToStringFunc="@(x => x == null ? null : x.Name)" Required="true" />
-								<MudDatePicker Label="Date" @bind-Date="foodDTO.Date" Required="true" />
-								<MudNumericField @bind-Value="foodDTO.Quantity" Label="Quantity (g)" Min="1" Max="1500" Required="true" Step="25" />
-							</MudCardContent>
-							<MudCardActions>
-								<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">Submit to journal</MudButton>
-								@if (foodDTO.ID != Guid.Empty)
-								{
-									<MudButton class="ml-auto" Variant="Variant.Filled" Color="Color.Warning" ButtonType="ButtonType.Button" OnClick="ResetForm">Reset</MudButton>
-								}
-							</MudCardActions>
-						</MudCard>
-					</MudContainer>
-				</EditForm>
-			</MudItem>
-			<MudItem>
-				<MudDatePicker Label="Start Date" Date="@start" DateChanged="OnUpdateStartDate" />
-				<MudDatePicker Label="End Date" Date="@end" DateChanged="OnUpdateEndDate" />
-				<MudDataGrid Items="@foodDTOEntryList">
-					<Columns>
-						<PropertyColumn Property="x => x.DateString" Title="Day" />
-						<PropertyColumn Property="x => x.FoodName" Title="Name" />
-						<PropertyColumn Property="x => x.KcalTotal" Title="Kcal" />
-						<TemplateColumn Sortable="false">
-							<CellTemplate>
-								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => foodDTO = @context.Item)" />
-							</CellTemplate>
-						</TemplateColumn>
-						<TemplateColumn Sortable="false">
-							<CellTemplate>
-								<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" 
-								OnClick="@(() => RemoveTableEntry(@context.Item))" />
-							</CellTemplate>
-						</TemplateColumn>
-					</Columns>
-				</MudDataGrid>
-			</MudItem>
-			<MudItem>
-				<MudText Align="Align.Center" Typo="Typo.h6">Today's kcal consumption</MudText>
-				<MudChart ChartType="ChartType.Pie" InputData="@data" InputLabels="@labels"
-						  Width="300px" Height="300px" />
-				<MudText Align="Align.Center" Typo="Typo.h6" Color="@kcalTextColor">@kcalConsumed / @kcalGoal</MudText>
+				<MudPaper>
+					<MudItem>
+						<EditForm Model="@foodDTO" OnValidSubmit="SubmitFoodEntry">
+							<MudContainer>
+								<MudCard>
+									<MudCardContent>
+										<MudAutocomplete T="FoodNutrition" Label="Enter food" @bind-Value="foodDTO.Food" SearchFunc="@FoodService.GetFoodNutrition"
+														 ToStringFunc="@(x => x == null ? null : x.Name)" Required="true" />
+										<MudDatePicker Label="Date" @bind-Date="foodDTO.Date" Required="true" />
+										<MudNumericField @bind-Value="foodDTO.Quantity" Label="Quantity (g)" Min="1" Max="1500" Required="true" Step="25" />
+									</MudCardContent>
+									<MudCardActions>
+										<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">Submit to journal</MudButton>
+										@if (foodDTO.ID != Guid.Empty)
+										{
+											<MudButton class="ml-auto" Variant="Variant.Filled" Color="Color.Warning" ButtonType="ButtonType.Button" OnClick="ResetForm">Reset</MudButton>
+										}
+									</MudCardActions>
+								</MudCard>
+							</MudContainer>
+						</EditForm>
+					</MudItem>
+					<MudDivider></MudDivider>
+					<MudItem>
+						<MudText Align="Align.Center" Typo="Typo.h6">Today's kcal consumption</MudText>
+						<MudChart ChartType="ChartType.Pie" InputData="@pieChartData" InputLabels="@labels" Width="60%" Height="60%" />
+						<MudText Align="Align.Center" Typo="Typo.h6" Color="@kcalTextColor">@Math.Round(kcalConsumed) / @Math.Round(kcalGoal)</MudText>
+						</MudItem>
+					</MudPaper>
+					<MudCard>
+						<MudCardContent>
+							<MudChip Color="Color.Secondary">Current BMI: @Math.Round(bmi, 2)</MudChip>
+						</MudCardContent>
+					</MudCard>
 				</MudItem>
-			</MudGrid>
-		</Authorized>
-		<NotAuthorized>
-			<p>You're not authorized.</p>
-		</NotAuthorized>
-		<Authorizing>
-			<p>Authorizing</p>
-		</Authorizing>
-	</AuthorizeView>
+				<MudItem>
+					<MudPaper class="px-2">
+						<MudDatePicker Label="Start Date" Date="@start" DateChanged="OnUpdateStartDate" />
+						<MudDatePicker Label="End Date" Date="@end" DateChanged="OnUpdateEndDate" />
+						<MudDataGrid Items="@foodDTOEntryList">
+							<Columns>
+								<PropertyColumn Property="x => x.DateString" Title="Day" />
+								<PropertyColumn Property="x => x.FoodName" Title="Name" />
+								<PropertyColumn Property="x => Math.Round(x.KcalTotal, 2)" Title="Kcal" />
+								<TemplateColumn Sortable="false">
+									<CellTemplate>
+										<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => foodDTO = @context.Item)" />
+									</CellTemplate>
+								</TemplateColumn>
+								<TemplateColumn Sortable="false">
+									<CellTemplate>
+										<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete"
+													   OnClick="@(() => RemoveTableEntry(@context.Item))" />
+									</CellTemplate>
+								</TemplateColumn>
+							</Columns>
+							<PagerContent>
+								<MudDataGridPager T="FoodDTO" />
+							</PagerContent>
+						</MudDataGrid>
+					</MudPaper>
+				</MudItem>
+				<MudItem>
+					<MudPaper Class="px-2">
+						<MudSelect Class="pb-5"
+							Label="Period" Value="@chartPeriod" T="Enums.ChartPeriodOptions" AnchorOrigin="Origin.BottomCenter"
+								   OpenIcon="@Icons.Material.Filled.CalendarMonth" ValueChanged="OnChartPeriodChange">
+							@foreach (Enums.ChartPeriodOptions item in Enum.GetValues(typeof(Enums.ChartPeriodOptions)))
+						{
+							<MudSelectItem Value="@item">@item</MudSelectItem>
+						}
+					</MudSelect>
+					<MudChart Class="px-2" ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="25em"></MudChart>
+				</MudPaper>
+			</MudItem>
+		</MudGrid>
+	</Authorized>
+	<NotAuthorized>
+		<p>You're not authorized.</p>
+	</NotAuthorized>
+	<Authorizing>
+		<p>Authorizing</p>
+	</Authorizing>
+</AuthorizeView>
 
-	@code {
+<style>
+	.mud-chart-line {
+		overflow: visible;
+	}
+</style>
+
+@code {
 	[CascadingParameter]
 	private Task<AuthenticationState>? authenticationState { get; set; }
 
+	public Enums.ChartPeriodOptions chartPeriod { get; set; } = Enums.ChartPeriodOptions.ThisWeek;
+	public List<ChartSeries> Series = new List<ChartSeries>()
+	{
+		new ChartSeries() { Name = "Placeholder", Data = new double[] { } },
+	};
+	public string[] XAxisLabels = new string[] { "Placeholder" };
 
-	double[] data = { 0 };
+
+	double[] pieChartData = { 0 };
 	string[] labels = { "null" };
-	float kcalGoal = 2000;
-	float kcalConsumed = 0;
+	double kcalGoal = 2000;
+	double kcalConsumed = 0;
+	double bmi = 0;
 
 	FoodDTO foodDTO = new();
 	DateTime? start = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
 	DateTime? end = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
-	private bool resetValueOnEmptyText;
-	private bool coerceText;
-	private bool coerceValue;
 	List<FoodNutrition> foodList = new();
 	List<FoodDTO> foodDTOEntryList = new();
 
@@ -109,12 +145,13 @@
 			if (user?.Identity is not null && user.Identity.IsAuthenticated)
 			{
 				foodDTO.UserID = Guid.Parse(user.Claims.ElementAt(2).Value);
-				SessionUserID = foodDTO.UserID;	
+				SessionUserID = foodDTO.UserID;
 				var userWithDetails = await UserAccountService.GetUserDetails(new User
 					{
 						ID = foodDTO.UserID,
 					});
-				kcalGoal = (float)userWithDetails.UserDetails.KCalGoal;
+				kcalGoal = userWithDetails.UserDetails.KCalGoal ?? 0;
+				bmi = userWithDetails.UserDetails.BMI ?? 0;
 
 				UpdatePage();
 			}
@@ -136,6 +173,7 @@
 	{
 		UpdateFoodJournalTableData();
 		UpdateTodayPieChart();
+		UpdateLineChart();
 	}
 
 	private void OnUpdateEndDate(DateTime? newDate)
@@ -160,7 +198,7 @@
 	{
 		var tupleList = FoodJournalService.GetTodayFoodJournalByCategoriesAndKcal(SessionUserID);
 		kcalConsumed = tupleList.Sum(x => x.Item2);
-		float kcalLeft = kcalGoal - kcalConsumed;
+		var kcalLeft = kcalGoal - kcalConsumed;
 		int newSize = tupleList.Count;
 
 		if (kcalLeft > 0)
@@ -189,7 +227,7 @@
 
 
 
-		data = newData;
+		pieChartData = newData;
 		labels = newLabel;
 		StateHasChanged();
 	}
@@ -203,10 +241,73 @@
 	private void RemoveTableEntry(FoodDTO foodDTOToRemove)
 	{
 		FoodJournalService.RemoveFoodJournalEntry(foodDTOToRemove);
-		if(this.foodDTO.ID.Equals(foodDTOToRemove.ID))
+		if (this.foodDTO.ID.Equals(foodDTOToRemove.ID))
 		{
 			ResetForm();
 		}
 		UpdatePage();
+	}
+	private void OnChartPeriodChange(Enums.ChartPeriodOptions chartPeriodOptions)
+	{
+		chartPeriod = chartPeriodOptions;
+		UpdateLineChart();
+	}
+
+	private void UpdateLineChart()
+	{
+		DateTime currentDate = DateTime.Now;
+
+		DateTime startOfPeriod = DateTime.Today;
+		DateTime endOfPeriod = DateTime.Today;
+		int endIndex = 0;
+		switch (chartPeriod)
+		{
+			case Enums.ChartPeriodOptions.ThisWeek:
+				startOfPeriod = currentDate.AddDays(-(int)currentDate.DayOfWeek + (int)DayOfWeek.Monday);
+				endOfPeriod = currentDate.AddDays(-(int)currentDate.DayOfWeek + (int)DayOfWeek.Sunday + 7);
+				endIndex = 7;
+				break;
+			case Enums.ChartPeriodOptions.LastWeek:
+				startOfPeriod = currentDate.AddDays(-(int)currentDate.DayOfWeek + (int)DayOfWeek.Monday - 7);
+				endOfPeriod = currentDate.AddDays(-(int)currentDate.DayOfWeek + (int)DayOfWeek.Sunday);
+				endIndex = 7;
+				break;
+			case Enums.ChartPeriodOptions.ThisMonth:
+				startOfPeriod = new DateTime(currentDate.Year, currentDate.Month, 1);
+				endOfPeriod = new DateTime(currentDate.Year, currentDate.Month, DateTime.DaysInMonth(currentDate.Year, currentDate.Month));
+				endIndex = endOfPeriod.Day;
+				break;
+			case Enums.ChartPeriodOptions.LastMonth:
+				startOfPeriod = new DateTime(currentDate.Year, currentDate.Month, 1).AddMonths(-1);
+				endOfPeriod = new DateTime(currentDate.Year, currentDate.Month, 1).AddDays(-1);
+				endIndex = endOfPeriod.Day;
+				break;
+			default: break;
+		}
+		startOfPeriod = startOfPeriod.Date;
+		endOfPeriod = endOfPeriod.Date;
+		var data = FoodJournalService.GetFoodJournals(startOfPeriod, endOfPeriod, SessionUserID);
+
+		string[] newXAxisLabels;
+		double[] newData;
+
+		newXAxisLabels = new string[endIndex];
+		newData = new double[endIndex];
+		for (int i = 0; i < endIndex; i++)
+		{
+			newXAxisLabels[i] = endIndex == 7 ? 
+					            i == 6 ? 
+								DayOfWeek.Sunday.ToString() 
+								: ((DayOfWeek)(i + 1)).ToString() 
+								: (i + 1).ToString();
+			
+			newData[i] = data.FindAll(x => x.Date == startOfPeriod.AddDays(i)).Sum(x => x.KcalTotal);
+		}
+
+		Series = new List<ChartSeries>()
+		{
+			new ChartSeries() {Name = "Kcal", Data = newData},
+		};
+		XAxisLabels = newXAxisLabels;
 	}
 }

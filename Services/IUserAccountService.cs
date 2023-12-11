@@ -8,5 +8,7 @@ namespace FitnessPortal.Services
         Task<User?> Login(User user);
 		Task<User?> GetUserDetails(User user);
 		void AddOrUpdateUserDTO(UserDTO userDTO);
-    }
+		UserDTO? GetUserDTO(Guid UserID);
+
+	}
 }

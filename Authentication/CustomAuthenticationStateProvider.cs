@@ -45,7 +45,7 @@ namespace FitnessPortal.Authentication
 			}
 		}
 
-		public async Task AuthenticateUser(UserSession userSession)
+		public async Task AuthenticateUser(UserSession? userSession)
 		{
 			ClaimsPrincipal claimsPrincipal;
 			if (userSession != null)

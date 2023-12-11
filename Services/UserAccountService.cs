@@ -24,7 +24,7 @@ namespace FitnessPortal.Services
 			{
 				model.UserName = user.UserName;
 				model.Password = user.Password;
-				model.Roles = user.Roles;
+				model.Role = user.Role;
 			}
 			else
 			{
@@ -68,7 +68,7 @@ namespace FitnessPortal.Services
 				ID = userDTO.UserID,
 				UserName = userDTO.UserName,
 				Password = userDTO.Password,
-				Roles = userDTO.Roles
+				Role = userDTO.Role
 			};
 			var modelUser = AddOrUpdateUser(user);
 
@@ -82,7 +82,7 @@ namespace FitnessPortal.Services
 				Age = userDTO.Age,
 				Weight = userDTO.Weight,
 				Height = userDTO.Height,
-				BMI = (userDTO.Weight != null && userDTO.Height != null) ? BMICalculator.Calc((float)userDTO.Height, (float)userDTO.Weight) : null,
+				BMI = (userDTO.Weight != null && userDTO.Height != null) ? BMICalculator.Calc(userDTO.Height ?? 0, userDTO.Weight ?? 0) : 0,
 				KCalGoal = userDTO.KCalGoal
 			};
 			AddOrUpdateUserDetails(userDetails);
@@ -92,6 +92,13 @@ namespace FitnessPortal.Services
 		{
 			var dbUser = await _context.Users.Include(x => x.UserDetails).FirstOrDefaultAsync(x => x.ID == user.ID);
 			return dbUser;
+		}
+
+		public UserDTO? GetUserDTO(Guid ID)
+		{
+			var result = _context.Users.Include(x => x.UserDetails)
+				.FirstOrDefault(x => x.ID == ID);
+			return UserDTO.From(result);
 		}
 
 		public async Task<User?> Login(User user)

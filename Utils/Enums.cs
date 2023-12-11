@@ -2,7 +2,7 @@
 {
     public static class Enums
     {
-        public enum Roles { Admin, User }
+        public enum Roles { User, Admin }
 
 		public static string GetRoleString(this int index)
 		{
@@ -29,5 +29,7 @@
 				return "Invalid Index";
 			}
 		}
+
+		public enum ChartPeriodOptions { ThisWeek, LastWeek, ThisMonth, LastMonth}
 	}
 }

@@ -11,7 +11,7 @@ namespace FitnessPortal.Data.Entities
         [Required]
         public int Category { get; set; }
         [Required]
-        public float Kcal { get; set; }
+        public double Kcal { get; set; }
         public List<FoodJournal> FoodJournals { get; set; } = [];
     }
 }

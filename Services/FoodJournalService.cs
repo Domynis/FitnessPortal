@@ -16,7 +16,7 @@ namespace FitnessPortal.Services
 		}
 		public void AddOrUpdateFoodJournalEntry(FoodDTO foodDTO)
 		{
-			FoodNutrition foodNutrition = _context.FoodsNutrition.FirstOrDefault(x => x.ID == foodDTO.Food.ID);
+			FoodNutrition? foodNutrition = _context.FoodsNutrition.FirstOrDefault(x => x.ID == foodDTO.Food.ID);
 
 			if (foodNutrition == null)
 			{
@@ -42,14 +42,14 @@ namespace FitnessPortal.Services
 			return result;
 		}
 
-		public List<Tuple<int, float>> GetTodayFoodJournalByCategoriesAndKcal(Guid UserID)
+		public List<Tuple<int, double>> GetTodayFoodJournalByCategoriesAndKcal(Guid UserID)
 		{
 			var result = from fj in _context.FoodsJournal
 						 join fn in _context.FoodsNutrition on fj.FoodNutritionID equals fn.ID
 						 where fj.Date == DateTime.Today && fj.UserID == UserID
 						 group fj by fn.Category
 						 into g
-						 select new Tuple<int, float>( g.Key, g.Sum(x => x.KcalTotal) )
+						 select new Tuple<int, double>( g.Key, g.Sum(x => x.KcalTotal) )
 						 ;
 
 			var listResult = result.ToList();

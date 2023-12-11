@@ -9,8 +9,8 @@ namespace FitnessPortal.Data.DTOs
 		public string FoodName { get; set; }
 		public DateTime? Date = DateTime.Today;
 		public string DateString { get; set; }
-		public float Quantity = 1;
-		public float KcalTotal = 0;
+		public double Quantity = 1;
+		public double KcalTotal = 0;
 		public Guid UserID = Guid.Empty;
 		public Guid ID = Guid.Empty;
 
@@ -22,6 +22,7 @@ namespace FitnessPortal.Data.DTOs
 				UserID = journal.UserID,
 				Quantity = journal.Quantity,
 				DateString = journal.Date.ToString("dd/MM/yyyy"),
+				Date = journal.Date,
 				Food = journal.FoodNutrition,
 				FoodName = journal.FoodNutrition.Name,
 				KcalTotal = journal.KcalTotal,

@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@using FitnessPortal.Authentication
 @inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthStateProvider
 
 <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
 <MudDialogProvider />
@@ -7,14 +9,26 @@
 
 <MudLayout>
 	<MudAppBar Elevation="0" Dense="true">
-		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => _drawerOpen = !_drawerOpen)"/>
 		<MudText Typo="Typo.h5">Fitness Portal</MudText>
 		<MudSpacer />
-		<MudToggleIconButton @bind-Toggled="@_isDarkMode" Color="Color.Inherit" Icon="@Icons.TwoTone.DarkMode" ToggledIcon="@Icons.Filled.LightMode" />
+		<AuthorizeView>
+			<Authorized>
+				<MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopRight">
+					<ActivatorContent>
+						<MudAvatar Color="Color.Success">@context.User.Identity.Name.Substring(0, 1).ToUpper()</MudAvatar>
+					</ActivatorContent>
+					<ChildContent>
+						<MudMenuItem OnClick="@(() => navigationManager.NavigateTo("/register"))">Profile</MudMenuItem>
+						<MudMenuItem OnClick="() => Logout()">Sign Out</MudMenuItem>
+					</ChildContent>
+				</MudMenu>
+			</Authorized>
+		</AuthorizeView>
+		<MudToggleIconButton @bind-Toggled="@_isDarkMode" Color="Color.Inherit" Icon="@Icons.Material.TwoTone.DarkMode" ToggledIcon="@Icons.Material.Filled.LightMode" />
 	</MudAppBar>
-	@* <MudDrawer>
-	<NavMenu />
-	</MudDrawer> *@
+		<MudDrawer @bind-Open="_drawerOpen" Elevation="1" Color="Color.Inherit" ClipMode="DrawerClipMode.Docked" Variant="DrawerVariant.Mini">
+		</MudDrawer>
 
 	<MudMainContent>
 		<MudContainer MaxWidth="MaxWidth.Large">
@@ -44,12 +58,20 @@
 		}
 	}
 
-	public bool _isDarkMode = false;
+	bool _isDarkMode = false;
+	bool _drawerOpen = false;
 	public MudTheme _theme = new MudTheme
 		{
-			Palette = new Palette
+			Palette = new PaletteLight
 			{
 				AppbarBackground = Colors.Indigo.Default,
 			}
 		};
+
+	private async void Logout()
+	{
+		var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+		await customAuthStateProvider.AuthenticateUser(null);
+		navigationManager.NavigateTo("/login");
+	}
 }

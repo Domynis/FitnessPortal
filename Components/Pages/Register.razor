@@ -36,7 +36,7 @@
 						<MudNumericField @bind-Value="model.Weight" Label="Weight (kg)" Min="0" Max="500"/>
 						<MudNumericField @bind-Value="model.Height" Label="Height (cm)" Min="0" Max="300" />
 						<MudNumericField @bind-Value="model.KCalGoal" Label="KCal Goal" Min="0"/>
-						<MudSelect @bind-Value="selectedRole" Label="Role" Required="true" >
+						<MudSelect @bind-Value="selectedRole" Label="Role" Required="true">
 							<MudSelectItem Value="@("User")"  />
 							<MudSelectItem Value="@("Admin")" />
 						</MudSelect> 
@@ -52,17 +52,34 @@
 
 
 @code {
-	bool isEdit = false;
+	[CascadingParameter]
+	private Task<AuthenticationState>? authenticationState { get; set; }
+
 	private string selectedRole = "User";
 	UserDTO model = new UserDTO();
+
+	protected override async Task OnInitializedAsync()
+	{
+		model.UserID = Guid.Empty; 
+		model.UserDetailsID = Guid.Empty;
+
+		if (authenticationState is not null)
+		{
+			var authState = await authenticationState;
+			var user = authState?.User;
+
+			if (user?.Identity is not null && user.Identity.IsAuthenticated)
+			{
+				var ID = Guid.Parse(user.Claims.ElementAt(2).Value);
+				model = UserAccountService.GetUserDTO(ID) ?? new();
+				model.Password = String.Empty;
+				selectedRole = model.Role == 1? "Admin" : "User";
+			}
+		}
+	}
 	private  void RegisterUser()
 	{
-		if (!isEdit)
-		{
-			model.UserID = Guid.Empty; model.UserDetailsID = Guid.Empty;
-		}
-
-		model.Roles = selectedRole.Equals("Admin") ? 1 : 0;
+		model.Role = selectedRole.Equals("Admin") ? 1 : 0;
 		UserAccountService.AddOrUpdateUserDTO(model);
 		NavigationManager.NavigateTo("/login");
 	}
