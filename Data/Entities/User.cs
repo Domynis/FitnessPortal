@@ -41,11 +41,11 @@ namespace FitnessPortal.Data.Entities
         /// <summary>
         /// Gets or sets the list of food journals associated with the user.
         /// </summary>
-        public List<FoodJournal> FoodJournals { get; set; } = new List<FoodJournal>();
+        public List<FoodJournal> FoodJournals { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the list of sleep journals associated with the user.
         /// </summary>
-        public List<SleepJournal> SleepJournals { get; set; } = new List<SleepJournal>();
+        public List<SleepJournal> SleepJournals { get; set; } = [];
     }
 }

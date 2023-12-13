@@ -11,115 +11,148 @@
 
 @inject NavigationManager NavigationManager
 
-<PageTitle>Register</PageTitle>
+<PageTitle>@pageTitle</PageTitle>
 
-<EditForm Model="@model" OnValidSubmit="RegisterUser">
-    <!-- MudBlazor Grid to center the registration card -->
-    <MudGrid Class="justify-center">
-        <MudItem md="5">
-            <MudContainer>
-                <!-- MudBlazor Card for the registration form -->
-                <MudCard>
-                    <MudCardHeader>
-                        <!-- MudBlazor Text for the registration header -->
-                        <MudText Typo="Typo.h2">Register</MudText>
-                    </MudCardHeader>
+	<EditForm Model="@model" OnValidSubmit="RegisterUser">
+		<!-- MudBlazor Grid to center the registration card -->
+		<MudGrid Class="justify-center">
+			<MudItem md="12">
+				<MudContainer>
+					<!-- MudBlazor Card for the registration form -->
+					<MudCard>
+						<MudCardHeader>
+							<!-- MudBlazor Text for the registration header -->
+							<MudText Typo="Typo.h2">@pageTitle</MudText>
+						</MudCardHeader>
 
-                    <MudCardContent>
-                        <!-- DataAnnotationsValidator for validating form data -->
-                        <DataAnnotationsValidator />
+						<MudCardContent>
+							<!-- DataAnnotationsValidator for validating form data -->
+							<DataAnnotationsValidator />
+							<MudGrid>
+								<MudItem md="6">
+									<MudTextField @bind-Value="model.UserName" Label="User Name" Required="true" />
+								</MudItem>
+								<MudItem md="6">
+									<MudTextField @bind-Value="model.Password" Label="Password" Required="true" InputType="InputType.Password" />
+								</MudItem>
+							</MudGrid>
+							<MudGrid>
+								<MudItem md="6">
+									<MudTextField @bind-Value="model.FirstName" Label="First Name" Required="true" />
+								</MudItem>
+								<MudItem md="6">
+									<MudTextField @bind-Value="model.LastName" Label="Last Name" Required="true" />
+								</MudItem>
+							</MudGrid>
+							<MudGrid>
+								<MudItem md="3">
+									<MudSelect @bind-Value="model.Gender" Label="Gender">
+										<MudSelectItem Value="@("Male")" />
+										<MudSelectItem Value="@("Female")" />
+									</MudSelect>
+								</MudItem>
+								<MudItem md="3">
+									<MudNumericField @bind-Value="model.Age" Label="Age" Min="0" Max="127" />
+								</MudItem>
+								<MudItem md="3">
+									<MudNumericField @bind-Value="model.Weight" Label="Weight (kg)" Min="0" Max="500" />
+								</MudItem>
+								<MudItem md="3">
+									<MudNumericField @bind-Value="model.Height" Label="Height (cm)" Min="0" Max="300" />
+								</MudItem>
+							</MudGrid>
 
-                        <!-- MudBlazor TextField for entering the username -->
-                        <MudTextField @bind-Value="model.UserName" Label="UserName" Required="true" />
+							<MudGrid>
+								<MudItem md="12">
+									@* <MudNumericField @bind-Value="model.KCalGoal" Label="KCal Goal" Min="0" /> *@
+									<MudSlider @bind-Value="model.KCalGoal" Min="1000" Max="5000" Step="100" Color="Color.Tertiary">KCal Goal: @model.KCalGoal</MudSlider>
+								</MudItem>
+							</MudGrid>
+							<MudGrid>
+								<MudItem md="12">
+									<MudSelect @bind-Value="model.Role" Label="Role" Required="true">
+										@foreach (Enums.Roles item in Enum.GetValues(typeof(Enums.Roles)))
+									{
+										<MudSelectItem Value="@((int)item)">@item</MudSelectItem>
+									}
+								</MudSelect>
+							</MudItem>
+						</MudGrid>
+					</MudCardContent>
 
-                        <!-- MudBlazor TextField for entering the password -->
-                        <MudTextField @bind-Value="model.Password" Label="Password" Required="true" InputType="InputType.Password" />
+					<MudCardActions>
+						<!-- MudBlazor Button to submit the registration form -->
+						<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="mx-auto">@buttonText</MudButton>
+						</MudCardActions>
+					</MudCard>
+				</MudContainer>
+			</MudItem>
+		</MudGrid>
+	</EditForm>
 
-                        <!-- MudBlazor TextField for entering the first name -->
-                        <MudTextField @bind-Value="model.FirstName" Label="FirstName" Required="true" />
+	@code {
+	// CascadingParameter for handling authentication state
+	[CascadingParameter]
+	private Task<AuthenticationState>? authenticationState { get; set; }
 
-                        <!-- MudBlazor TextField for entering the last name -->
-                        <MudTextField @bind-Value="model.LastName" Label="LastName" Required="true" />
+	// UserDTO model for capturing registration data
+	UserDTO model = new UserDTO();
 
-                        <!-- MudBlazor Select for choosing the gender -->
-                        <MudSelect @bind-Value="model.Gender" Label="Gender">
-                            <MudSelectItem Value="@("Male")" />
-                            <MudSelectItem Value="@("Female")" />
-                        </MudSelect>
+	string pageTitle = "Register";
+	string buttonText = "Register";
+	bool isLogged = false;
 
-                        <!-- MudBlazor NumericField for entering the age -->
-                        <MudNumericField @bind-Value="model.Age" Label="Age" Min="0" Max="127" />
+	/// <summary>
+	/// Invoked when the component is initialized asynchronously.
+	/// </summary>
+	protected override async Task OnInitializedAsync()
+	{
+		// Initialize user and user details IDs
+		model.UserID = Guid.Empty;
+		model.UserDetailsID = Guid.Empty;
+		model.KCalGoal = 1500;
 
-                        <!-- MudBlazor NumericField for entering the weight -->
-                        <MudNumericField @bind-Value="model.Weight" Label="Weight (kg)" Min="0" Max="500" />
+		if (authenticationState is not null)
+		{
+			var authState = await authenticationState;
+			var user = authState?.User;
 
-                        <!-- MudBlazor NumericField for entering the height -->
-                        <MudNumericField @bind-Value="model.Height" Label="Height (cm)" Min="0" Max="300" />
+			if (user?.Identity is not null && user.Identity.IsAuthenticated)
+			{
+				// Retrieve user details if authenticated
+				var ID = Guid.Parse(user.Claims.ElementAt(2).Value);
+				model = UserAccountService.GetUserDTO(ID) ?? new();
+				model.Password = String.Empty;
+				pageTitle = "Edit profile";
+				buttonText = "Update";
+				isLogged = true;
+			}
+		}
+	}
 
-                        <!-- MudBlazor NumericField for entering the KCal goal -->
-                        <MudNumericField @bind-Value="model.KCalGoal" Label="KCal Goal" Min="0" />
+	/// <summary>
+	/// Registers the user on form submission.
+	/// </summary>
+	private void RegisterUser()
+	{
+		// Add or update the user DTO
+		try
+		{
+			UserAccountService.AddOrUpdateUserDTO(model);
+		}
+		catch (Exception ex)
+		{
+			SnackBar.Add(ex.Message, Severity.Error);
+		}
 
-                        <!-- MudBlazor Select for choosing the user role -->
-                        <MudSelect @bind-Value="selectedRole" Label="Role" Required="true">
-                            <MudSelectItem Value="@("User")" />
-                            <MudSelectItem Value="@("Admin")" />
-                        </MudSelect>
-                    </MudCardContent>
-
-                    <MudCardActions>
-                        <!-- MudBlazor Button to submit the registration form -->
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="mx-auto">Register</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </MudContainer>
-        </MudItem>
-    </MudGrid>
-</EditForm>
-
-@code {
-    // CascadingParameter for handling authentication state
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
-
-    // Initial role selected for the user
-    private string selectedRole = "User";
-
-    // UserDTO model for capturing registration data
-    UserDTO model = new UserDTO();
-
-    // Method called when the component is initialized
-    protected override async Task OnInitializedAsync()
-    {
-        // Initialize user and user details IDs
-        model.UserID = Guid.Empty;
-        model.UserDetailsID = Guid.Empty;
-
-        if (authenticationState is not null)
-        {
-            var authState = await authenticationState;
-            var user = authState?.User;
-
-            if (user?.Identity is not null && user.Identity.IsAuthenticated)
-            {
-                // Retrieve user details if authenticated
-                var ID = Guid.Parse(user.Claims.ElementAt(2).Value);
-                model = UserAccountService.GetUserDTO(ID) ?? new();
-                model.Password = String.Empty;
-                selectedRole = model.Role == 1 ? "Admin" : "User";
-            }
-        }
-    }
-
-    // Method to register the user on form submission
-    private void RegisterUser()
-    {
-        // Set the role based on the selected role
-        model.Role = selectedRole.Equals("Admin") ? 1 : 0;
-
-        // Add or update the user DTO
-        UserAccountService.AddOrUpdateUserDTO(model);
-
-        // Navigate to the login page after registration
-        NavigationManager.NavigateTo("/login");
-    }
+		// Navigate to the login page after registration
+		if (isLogged)
+		{
+			NavigationManager.NavigateTo("/");
+		}
+		else
+		{
+			NavigationManager.NavigateTo("/login");
+		}
+	}
 }

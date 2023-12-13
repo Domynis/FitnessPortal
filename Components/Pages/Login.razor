@@ -20,7 +20,6 @@
                 <!-- MudBlazor Card for the login form -->
                 <MudCard>
                     <MudCardHeader>
-                        <!-- MudBlazor Text for the login header -->
                         <MudText Typo="Typo.h2">Login</MudText>
                     </MudCardHeader>
 
@@ -28,18 +27,14 @@
                         <!-- DataAnnotationsValidator for validating form data -->
                         <DataAnnotationsValidator />
 
-                        <!-- MudBlazor TextField for entering the username -->
                         <MudTextField @bind-Value="model.UserName" Label="Username" Required="true" />
 
-                        <!-- MudBlazor TextField for entering the password -->
                         <MudTextField @bind-Value="model.Password" InputType="InputType.Password" Label="Password" Required="true" />
                     </MudCardContent>
 
                     <MudCardActions>
-                        <!-- MudBlazor Button to navigate to the registration page -->
                         <MudButton Variant="Variant.Filled" Color="Color.Secondary" ButtonType="ButtonType.Button" Href="/register" StartIcon="@Icons.Material.Filled.AppRegistration">Register</MudButton>
 
-                        <!-- MudBlazor Button to submit the login form -->
                         <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Class="ml-auto">Login</MudButton>
                     </MudCardActions>
                 </MudCard>
@@ -55,13 +50,17 @@
     // EditContext for handling form validation
     private EditContext editContext;
 
-    // Method called when the component is initialized
+    /// <summary>
+    /// Invoked when the component is initialized.
+    /// </summary>
     protected override void OnInitialized()
     {
         editContext = new EditContext(model);
     }
 
-    // Method to authenticate the user on form submission
+    /// <summary>
+    /// Authenticates the user on form submission.
+    /// </summary>
     private async void Authenticate()
     {
         // Attempt to login using the provided credentials

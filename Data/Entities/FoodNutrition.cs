@@ -36,6 +36,6 @@ namespace FitnessPortal.Data.Entities
         /// <summary>
         /// Gets or sets the list of food journals associated with this food item.
         /// </summary>
-        public List<FoodJournal> FoodJournals { get; set; } = new List<FoodJournal>();
+        public List<FoodJournal> FoodJournals { get; set; } = [];
     }
 }

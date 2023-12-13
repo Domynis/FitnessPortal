@@ -61,16 +61,11 @@ namespace FitnessPortal.Services
         /// <inheritdoc/>
         public List<Tuple<int, double>> GetTodayFoodJournalByCategoriesAndKcal(Guid UserID)
         {
-            var result = from fj in _context.FoodsJournal
-                         join fn in _context.FoodsNutrition on fj.FoodNutritionID equals fn.ID
-                         where fj.Date == DateTime.Today && fj.UserID == UserID
-                         group fj by fn.Category
-                         into g
-                         select new Tuple<int, double>(g.Key, g.Sum(x => x.KcalTotal));
-
-            var listResult = result.ToList();
-
-            return listResult;
+            return
+            [
+                .. _context.FoodsJournal.Where(x => x.Date == DateTime.Today && x.UserID == UserID)
+                                .GroupBy(x => x.FoodNutrition.Category).Select(x => new Tuple<int, double>(x.Key, x.Sum(y => y.KcalTotal))),
+            ];
         }
 
         /// <inheritdoc/>

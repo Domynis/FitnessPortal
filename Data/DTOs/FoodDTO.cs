@@ -16,7 +16,7 @@ namespace FitnessPortal.Data.DTOs
         /// <summary>
         /// Gets or sets the name of the food.
         /// </summary>
-        public string FoodName { get; set; }
+        public string FoodName { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the date associated with the food entry.
@@ -26,7 +26,7 @@ namespace FitnessPortal.Data.DTOs
         /// <summary>
         /// Gets or sets the formatted string representation of the date.
         /// </summary>
-        public string DateString { get; set; }
+        public string DateString { get; set; } = DateTime.Today.ToString("dd.MM.yyyy");
 
         /// <summary>
         /// Gets or sets the quantity of the food consumed.

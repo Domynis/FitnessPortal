@@ -31,7 +31,7 @@ namespace FitnessPortal.Services
         /// A task representing the asynchronous operation that, when completed,
         /// contains a nullable User object representing the user details.
         /// </returns>
-        Task<User?> GetUserDetails(User user);
+        Task<User?> GetUserDetails(Guid userID);
 
         /// <summary>
         /// Adds or updates user information based on the provided UserDTO object.

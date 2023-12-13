@@ -49,7 +49,7 @@ namespace FitnessPortal.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("FoodsJournal");
+                    b.ToTable("FoodsJournal", (string)null);
                 });
 
             modelBuilder.Entity("FitnessPortal.Data.Entities.FoodNutrition", b =>
@@ -70,7 +70,7 @@ namespace FitnessPortal.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("FoodsNutrition");
+                    b.ToTable("FoodsNutrition", (string)null);
                 });
 
             modelBuilder.Entity("FitnessPortal.Data.Entities.SleepJournal", b =>
@@ -95,7 +95,7 @@ namespace FitnessPortal.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("SleepJournal");
+                    b.ToTable("SleepJournal", (string)null);
                 });
 
             modelBuilder.Entity("FitnessPortal.Data.Entities.User", b =>
@@ -117,7 +117,7 @@ namespace FitnessPortal.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("FitnessPortal.Data.Entities.UserDetails", b =>
@@ -160,7 +160,7 @@ namespace FitnessPortal.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("UsersDetails");
+                    b.ToTable("UsersDetails", (string)null);
                 });
 
             modelBuilder.Entity("FitnessPortal.Data.Entities.FoodJournal", b =>

@@ -2,7 +2,6 @@ using FitnessPortal.Authentication;
 using FitnessPortal.Components;
 using FitnessPortal.Data;
 using FitnessPortal.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.EntityFrameworkCore;

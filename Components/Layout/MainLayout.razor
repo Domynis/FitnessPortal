@@ -10,83 +10,83 @@
 
 <!-- MudBlazor layout component -->
 <MudLayout>
-    <!-- MudBlazor App Bar -->
-    <MudAppBar Elevation="0" Dense="true">
-        <!-- Menu button to toggle the drawer -->
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => _drawerOpen = !_drawerOpen)" />
-        <!-- Application title -->
-        <MudText Typo="Typo.h5">Fitness Portal</MudText>
-        <MudSpacer />
-        <!-- AuthorizeView to conditionally render authenticated user options -->
-        <AuthorizeView>
-            <Authorized>
-                <!-- User menu with avatar, profile, and sign out options -->
-                <MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopRight">
-                    <ActivatorContent>
-                        <MudAvatar Color="Color.Success">@context.User.Identity.Name.Substring(0, 1).ToUpper()</MudAvatar>
-                        </ActivatorContent>
-                        <ChildContent>
-                            <MudMenuItem OnClick="@(() => navigationManager.NavigateTo("/register"))">Profile</MudMenuItem>
-                            <MudMenuItem OnClick="() => Logout()">Sign Out</MudMenuItem>
-                        </ChildContent>
-                    </MudMenu>
-                </Authorized>
-            </AuthorizeView>
-            <!-- Dark mode toggle button -->
-            <MudToggleIconButton @bind-Toggled="@_isDarkMode" Color="Color.Inherit" Icon="@Icons.Material.TwoTone.DarkMode" ToggledIcon="@Icons.Material.Filled.LightMode" />
-        </MudAppBar>
+	<!-- MudBlazor App Bar -->
+	<MudAppBar Elevation="0" Dense="true">
+		<!-- Menu button to toggle the drawer -->
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => _drawerOpen = !_drawerOpen)" />
+		<!-- Application title -->
+		<MudText Typo="Typo.h5">Fitness Portal</MudText>
+		<MudSpacer />
+		<!-- AuthorizeView to conditionally render authenticated user options -->
+		<AuthorizeView>
+			<Authorized>
+				<!-- User menu with avatar, profile, and sign out options -->
+				<MudMenu ActivationEvent="@MouseEvent.MouseOver" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopRight">
+					<ActivatorContent>
+						<MudAvatar Color="Color.Success">@context?.User?.Identity?.Name?.Substring(0, 1).ToUpper()</MudAvatar>
+						</ActivatorContent>
+						<ChildContent>
+							<MudMenuItem OnClick="@(() => navigationManager.NavigateTo("/register"))">Profile</MudMenuItem>
+							<MudMenuItem OnClick="() => Logout()">Sign Out</MudMenuItem>
+						</ChildContent>
+					</MudMenu>
+				</Authorized>
+			</AuthorizeView>
+			<!-- Dark mode toggle button -->
+			<MudToggleIconButton @bind-Toggled="@_isDarkMode" Color="Color.Inherit" Icon="@Icons.Material.TwoTone.DarkMode" ToggledIcon="@Icons.Material.Filled.LightMode" />
+		</MudAppBar>
 
-        <!-- MudBlazor Drawer -->
-        <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Color="Color.Inherit" ClipMode="DrawerClipMode.Docked" Variant="DrawerVariant.Mini">
-        </MudDrawer>
+		<!-- MudBlazor Drawer -->
+		<MudDrawer @bind-Open="_drawerOpen" Elevation="1" Color="Color.Inherit" ClipMode="DrawerClipMode.Docked" Variant="DrawerVariant.Mini">
+		</MudDrawer>
 
-        <!-- MudBlazor Main Content -->
-        <MudMainContent>
-            <MudContainer MaxWidth="MaxWidth.Large">
-                @Body <!-- Render the body content -->
-        </MudContainer>
-    </MudMainContent>
+		<!-- MudBlazor Main Content -->
+		<MudMainContent>
+			<MudContainer MaxWidth="MaxWidth.Large">
+				@Body <!-- Render the body content -->
+		</MudContainer>
+	</MudMainContent>
 </MudLayout>
 
 <!-- Blazor error handling UI -->
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
+<div id="blazor-error-ui" style="color:black">
+	An unhandled error has occurred.
+	<a href="" class="reload">Reload</a>
+	<a class="dismiss">🗙</a>
 </div>
 
 @code {
-    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+	[CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
-    // Initialize the component
-    protected async override Task OnInitializedAsync()
-    {
-        base.OnInitialized();
-        var user = (await AuthStat).User;
-        // Redirect to login page if the user is not authenticated
-        if (!user.Identity.IsAuthenticated)
-        {
-            navigationManager.NavigateTo("/login");
-        }
-    }
+	// Initialize the component
+	protected async override Task OnInitializedAsync()
+	{
+		base.OnInitialized();
+		var user = (await AuthStat).User;
+		// Redirect to login page if the user is not authenticated
+		if (!user.Identity.IsAuthenticated)
+		{
+			navigationManager.NavigateTo("/login");
+		}
+	}
 
-    bool _isDarkMode = false;
-    bool _drawerOpen = false;
-    public MudTheme _theme = new MudTheme
-        {
-            Palette = new PaletteLight
-            {
-                AppbarBackground = Colors.Indigo.Default,
-            }
-        };
+	bool _isDarkMode = false;
+	bool _drawerOpen = false;
+	public MudTheme _theme = new MudTheme
+		{
+			Palette = new PaletteLight
+			{
+				AppbarBackground = Colors.Indigo.Default,
+			}
+		};
 
-    // Logout method
-    private async void Logout()
-    {
-        var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-        // Call custom authentication state provider to log out the user
-        await customAuthStateProvider.AuthenticateUser(null);
-        // Redirect to the login page after logging out
-        navigationManager.NavigateTo("/login");
-    }
+	// Logout method
+	private async void Logout()
+	{
+		var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+		// Call custom authentication state provider to log out the user
+		await customAuthStateProvider.AuthenticateUser(null);
+		// Redirect to the login page after logging out
+		navigationManager.NavigateTo("/login");
+	}
 }

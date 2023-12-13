@@ -20,51 +20,50 @@
 	<!-- Display content if the user is authorized -->
 	<Authorized>
 		<MudGrid Justify="Justify.Center">
-			<MudItem md="5">
+			<MudItem md="6">
 				<MudPaper>
-					<MudItem>
-						<!-- EditForm for entering food details -->
-						<EditForm Model="@foodDTO" OnValidSubmit="SubmitFoodEntry">
-							<MudContainer>
-								<MudCard>
-									<MudCardContent>
-										<!-- MudBlazor Autocomplete for food selection -->
-										<MudAutocomplete T="FoodNutrition" Label="Enter food" @bind-Value="foodDTO.Food" SearchFunc="@FoodService.GetFoodNutrition"
-														 ToStringFunc="@(x => x == null ? null : x.Name)" Required="true" />
-										<!-- MudBlazor DatePicker for selecting the date -->
-										<MudDatePicker Label="Date" @bind-Date="foodDTO.Date" Required="true" />
-										<!-- MudBlazor NumericField for entering the quantity -->
-										<MudNumericField @bind-Value="foodDTO.Quantity" Label="Quantity (g)" Min="1" Max="1500" Required="true" Step="25" />
-									</MudCardContent>
-									<MudCardActions>
-										<!-- MudBlazor Button to submit the form -->
-										<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">Submit to journal</MudButton>
-										<!-- MudBlazor Button to reset the form if editing MudBlazor Datagrid entry -->
-										@if (foodDTO.ID != Guid.Empty)
-										{
-											<MudButton class="ml-auto" Variant="Variant.Filled" Color="Color.Warning" ButtonType="ButtonType.Button" OnClick="ResetForm">Reset</MudButton>
-										}
-									</MudCardActions>
-								</MudCard>
-							</MudContainer>
-						</EditForm>
-					</MudItem>
+					<!-- EditForm for entering food details -->
+					<EditForm Model="@foodDTO" OnValidSubmit="SubmitFoodEntry">
+						<MudContainer>
+							<MudCard>
+								<MudCardContent>
+									<!-- MudBlazor Autocomplete for food selection -->
+									<MudAutocomplete T="FoodNutrition" Label="Enter food" @bind-Value="foodDTO.Food" SearchFunc="@FoodService.GetFoodNutrition"
+													 ToStringFunc="@(x => x == null ? null : x.Name)" Required="true" />
+									<!-- MudBlazor DatePicker for selecting the date -->
+									<MudDatePicker Label="Date" @bind-Date="foodDTO.Date" Required="true" />
+									<!-- MudBlazor NumericField for entering the quantity -->
+									<MudNumericField @bind-Value="foodDTO.Quantity" Label="Quantity (g)" Min="1" Max="1500" Required="true" Step="25" />
+								</MudCardContent>
+								<MudCardActions>
+									<!-- MudBlazor Button to submit the form -->
+									<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">
+										@SubmitButtonText
+									</MudButton>
+									<!-- MudBlazor Button to reset the form if editing MudBlazor Datagrid entry -->
+									@if (foodDTO.ID != Guid.Empty)
+									{
+										<MudButton class="ml-auto" Variant="Variant.Filled" Color="Color.Warning" ButtonType="ButtonType.Button" OnClick="ResetForm">Reset</MudButton>
+									}
+								</MudCardActions>
+							</MudCard>
+						</MudContainer>
+					</EditForm>
 					<MudDivider></MudDivider>
-					<MudItem>
-						<MudText Align="Align.Center" Typo="Typo.h6">Today's kcal consumption</MudText>
-						<!-- MudBlazor PieChart for displaying daily kcal usage of the currently logged in user-->
-						<MudChart ChartType="ChartType.Pie" InputData="@pieChartData" InputLabels="@pieLabels" Width="60%" Height="60%" />
-						<MudText Align="Align.Center" Typo="Typo.h6" Color="@kcalTextColor">@Math.Round(kcalConsumed) / @Math.Round(kcalGoal)</MudText>
-						</MudItem>
+					<MudText Align="Align.Center" Typo="Typo.h6">Today's kcal consumption</MudText>
+					<!-- MudBlazor PieChart for displaying daily kcal usage of the currently logged in user-->
+					<MudChart ChartType="ChartType.Pie" InputData="@pieChartData"
+							  InputLabels="@pieLabels" Width="60%" Height="60%" ChartOptions="@pieChartOptions" />
+					<MudText Align="Align.Center" Typo="Typo.h6" Color="@kcalTextColor">@Math.Round(kcalConsumed) / @Math.Round(kcalGoal)</MudText>
+						<!-- MudBlazor Card displaying BMI -->
+						<MudCard>
+							<MudCardContent>
+								<MudChip Color="Color.Secondary">Current BMI: @Math.Round(bmi, 2)</MudChip>
+							</MudCardContent>
+						</MudCard>
 					</MudPaper>
-					<!-- MudBlazor Card displaying BMI -->
-					<MudCard>
-						<MudCardContent>
-							<MudChip Color="Color.Secondary">Current BMI: @Math.Round(bmi, 2)</MudChip>
-						</MudCardContent>
-					</MudCard>
 				</MudItem>
-				<MudItem>
+				<MudItem md="6">
 					<MudPaper class="px-2">
 						<MudDatePicker Label="Start Date" Date="@start" DateChanged="OnUpdateStartDate" />
 						<MudDatePicker Label="End Date" Date="@end" DateChanged="OnUpdateEndDate" />
@@ -94,7 +93,9 @@
 						</MudDataGrid>
 					</MudPaper>
 				</MudItem>
-				<MudItem>
+			</MudGrid>
+			<MudGrid Justify="Justify.Center">
+				<MudItem md="12">
 					<MudPaper Class="px-2">
 						<!-- MudBlazor Select for choosing the LineChart period -->
 						<MudSelect Class="pb-5"
@@ -106,7 +107,7 @@
 						}
 					</MudSelect>
 					<!-- MudBlazor Chart for displaying a line chart corresponding to the total Kcal intake during the chosen period, per days-->
-					<MudChart Class="px-2" ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="25em"></MudChart>
+					<MudChart Class="px-2" ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="50vh"></MudChart>
 				</MudPaper>
 			</MudItem>
 		</MudGrid>
@@ -142,6 +143,21 @@
 	{
 		new ChartSeries() { Name = "Placeholder", Data = new double[] { } },
 	};
+	string[] pieChartPallete = new[]
+		{
+			"#94a6a8", // Original color
+			"#1e90ff", // Dodger Blue
+			"#ff4500", // Orange Red
+			"#32cd32", // Lime Green
+			"#ff69b4", // Hot Pink
+			"#ffd700", // Gold
+			"#8a2be2", // Blue Violet
+			"#00ff7f", // Spring Green
+			"#ff8c00", // Dark Orange
+			"#9932cc"  // Dark Orchid
+	};
+
+	ChartOptions pieChartOptions = new();
 
 	// Array for X-axis labels in the LineChart
 	public string[] XAxisLabels = new string[] { "Placeholder" };
@@ -174,7 +190,12 @@
 	// Color for displaying kcal consumption status
 	private Color kcalTextColor = Color.Default;
 
-	// Method called when the component is initialized
+	public string SubmitButtonText => foodDTO.ID == Guid.Empty ? "Submit to journal" : "Save to journal";
+
+	/// <summary>
+	/// Invoked when the component is initialized asynchronously.
+	/// </summary>
+	/// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
 	protected override async Task OnInitializedAsync()
 	{
 		if (authenticationState is not null)
@@ -189,12 +210,10 @@
 				SessionUserID = foodDTO.UserID;
 
 				// Retrieve user details, including kcal goal and BMI
-				var userWithDetails = await UserAccountService.GetUserDetails(new User
-					{
-						ID = foodDTO.UserID,
-					});
-				kcalGoal = userWithDetails.UserDetails.KCalGoal ?? 0;
-				bmi = userWithDetails.UserDetails.BMI ?? 0;
+				var userWithDetails = await UserAccountService.GetUserDetails(foodDTO.UserID);
+				
+				kcalGoal = userWithDetails?.UserDetails.KCalGoal ?? 0;
+				bmi = userWithDetails?.UserDetails.BMI ?? 0;
 
 				// Update the page content
 				UpdatePage();
@@ -202,7 +221,9 @@
 		}
 	}
 
-	// Method to submit a new food entry
+	/// <summary>
+	/// Method to submit a new food entry
+	/// </summary>
 	private void SubmitFoodEntry()
 	{
 		if (foodDTO.Food.Name == null)
@@ -219,7 +240,9 @@
 		UpdatePage();
 	}
 
-	// Method to update the entire page content
+	/// <summary>
+	/// Method to update the entire page content
+	/// </summary>
 	private void UpdatePage()
 	{
 		UpdateFoodJournalTableData();
@@ -227,26 +250,37 @@
 		UpdateLineChart();
 	}
 
-	// Method called when the start date of the selected period is updated
+	/// <summary>
+	/// Updates the start date of the selected period and triggers the update of the food journal table data.
+	/// </summary>
+	/// <param name="newDate">The new start date.</param>
 	private void OnUpdateStartDate(DateTime? newDate)
 	{
 		start = newDate;
 		UpdateFoodJournalTableData();
 	}
 	// Method called when the end date of the selected period is updated
+	/// <summary>
+	/// Updates the end date of the selected period and triggers the update of the food journal table data.
+	/// </summary>
+	/// <param name="newDate">The new end date.</param>
 	private void OnUpdateEndDate(DateTime? newDate)
 	{
 		end = newDate;
 		UpdateFoodJournalTableData();
 	}
 
-	// Method to update the food journal table data for the selected period
+	/// <summary>
+	/// Updates the food journal table data based on the selected period.
+	/// </summary>
 	private void UpdateFoodJournalTableData()
 	{
 		foodDTOEntryList = FoodJournalService.GetFoodJournals(start ?? DateTime.Today, end ?? DateTime.Today, SessionUserID);
 	}
 
-	// Method to update the PieChart displaying today's kcal consumption
+	/// <summary>
+	/// Method to update the PieChart displaying today's kcal consumption
+	/// </summary>
 	private void UpdateTodayPieChart()
 	{
 		var tupleList = FoodJournalService.GetTodayFoodJournalByCategoriesAndKcal(SessionUserID);
@@ -257,25 +291,32 @@
 		if (kcalLeft > 0)
 		{
 			newSize++;
+			pieChartOptions.ChartPalette = pieChartPallete;
+		}
+		else
+		{
+			pieChartOptions.ChartPalette = pieChartPallete.Skip(1).ToArray();
 		}
 
 		var newData = new double[newSize];
 		var newLabel = new string[newSize];
-		for (int i = 0; i < tupleList.Count; i++)
-		{
-			newLabel[i] = Enums.GetFoodCategoryString(tupleList.ElementAt(i).Item1);
-			newData[i] = (double)tupleList.ElementAt(i).Item2;
-		}
 
 		if (tupleList.Count < newSize)
 		{
-			newLabel[newSize - 1] = "Kcal left";
-			newData[newSize - 1] = (double)kcalLeft;
+			newLabel[0] = "Kcal left";
+			newData[0] = (double)kcalLeft;
 			kcalTextColor = Color.Default;
 		}
 		else
 		{
 			kcalTextColor = Color.Warning;
+		}
+
+		for (int i = 0; i < tupleList.Count; i++)
+		{
+			var arrIndex = kcalLeft > 0 ? i + 1 : i;
+			newLabel[arrIndex] = Enums.GetFoodCategoryString(tupleList.ElementAt(i).Item1);
+			newData[arrIndex] = (double)tupleList.ElementAt(i).Item2;
 		}
 
 		pieChartData = newData;
@@ -285,14 +326,19 @@
 		StateHasChanged();
 	}
 
-	// Method to reset the form for entering food data
+	/// <summary>
+	/// Method to reset the form for entering food data
+	/// </summary>
 	private void ResetForm()
 	{
 		foodDTO = new();
 		foodDTO.UserID = SessionUserID;
 	}
 
-	// Method to remove a food entry from the journal table
+	/// <summary>
+	/// Removes a table entry from the food journal and updates the page content.
+	/// </summary>
+	/// <param name="foodDTOToRemove">The food DTO entry to be removed.</param>
 	private void RemoveTableEntry(FoodDTO foodDTOToRemove)
 	{
 		FoodJournalService.RemoveFoodJournalEntry(foodDTOToRemove);
@@ -306,8 +352,10 @@
 		// Update the page content
 		UpdatePage();
 	}
-
-	// Method called when the chart period is changed
+	/// <summary>
+	/// Invoked when the chart period is changed
+	/// </summary>
+	/// <param name="chartPeriodOptions">the chartPeriod corresponding to the LineChart</param>
 	private void OnChartPeriodChange(Enums.ChartPeriodOptions chartPeriodOptions)
 	{
 		chartPeriod = chartPeriodOptions;
@@ -316,7 +364,9 @@
 		UpdateLineChart();
 	}
 
-	// Method to update the line chart based on the selected period
+	/// <summary>
+	/// Method to update the line chart based on the selected period
+	/// </summary>
 	private void UpdateLineChart()
 	{
 		DateTime currentDate = DateTime.Now;

@@ -13,14 +13,14 @@ namespace FitnessPortal.Services
         /// <param name="height">The height in centimeters.</param>
         /// <param name="weight">The weight in kilograms.</param>
         /// <returns>The calculated BMI.</returns>
-        public static double Calc(double height, double weight)
+        public static double Calc(double height = 0, double weight = 0)
         {
             if (height <= 0 || weight <= 0)
             {
                 throw new ArgumentException("Height and weight must be positive values.");
             }
 
-            double heightInMeters = height / 100;
+            var heightInMeters = height / 100;
             return Math.Round(weight / (heightInMeters * heightInMeters), 2);
         }
     }
