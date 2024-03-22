@@ -26,11 +26,10 @@ Develop a Blazor-based fitness web application using MudBlazor components and En
 ## Data Model
 - Utilize Entity Framework for database interactions.
 - Define data structures for user profiles, food logs, and other relevant entities.
-
-## Timeline
-Aim for completion within the month of December.
-
+- 
 ## Dependencies
 - Ensure compatibility with the latest versions of Blazor, MudBlazor, and Entity Framework.
-- Consider any additional dependencies for charting libraries if needed.
+
+## Documentation
+- User and Developer documentation is available in the Documentation folder.
 
