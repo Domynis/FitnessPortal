@@ -1,5 +1,5 @@
 ﻿using FitnessPortal.Data.Entities;
-using FitnessPortal.Services;
+using FitnessPortal.Utils;
 
 namespace FitnessPortal.Data.DTOs
 {

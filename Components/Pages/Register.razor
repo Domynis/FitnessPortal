@@ -143,6 +143,7 @@
 		catch (Exception ex)
 		{
 			SnackBar.Add(ex.Message, Severity.Error);
+			return;
 		}
 
 		// Navigate to the login page after registration

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FitnessPortal.Services
+namespace FitnessPortal.Utils
 {
     /// <summary>
     /// Provides methods for calculating Body Mass Index (BMI).

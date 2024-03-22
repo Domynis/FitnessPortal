@@ -1,10 +1,12 @@
 ﻿@inherits LayoutComponentBase
 @using FitnessPortal.Authentication
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthStateProvider
 
 <!-- Theme providers for MudBlazor components -->
-<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+<MudThemeProvider IsDarkMode="@_isDarkMode" Theme="_theme" IsDarkModeChanged="@OnDarkModeChanged" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -57,10 +59,15 @@
 
 @code {
 	[CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
-
-	// Initialize the component
+	/// <summary>
+	/// Invoked when the component is initialized asynchronously.
+	/// </summary>
+	/// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
 	protected async override Task OnInitializedAsync()
 	{
+		var result = await ProtectedSessionStore.GetAsync<bool>("isDarkMode");
+		_isDarkMode = result.Success ? result.Value : false;
+
 		base.OnInitialized();
 		var user = (await AuthStat).User;
 		// Redirect to login page if the user is not authenticated
@@ -70,7 +77,7 @@
 		}
 	}
 
-	bool _isDarkMode = false;
+	bool _isDarkMode;
 	bool _drawerOpen = false;
 	public MudTheme _theme = new MudTheme
 		{
@@ -80,7 +87,19 @@
 			}
 		};
 
-	// Logout method
+	/// <summary>
+	/// Invoked when the darkMode toggle is switched on or off
+	/// saves the value of the bool value that represents the darkMode state in the browser storage
+	/// </summary>
+	/// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+	private async Task OnDarkModeChanged()
+	{
+		await ProtectedSessionStore.SetAsync("isDarkMode", _isDarkMode);
+	}
+
+	/// <summary>
+	/// Executes the procedure of logging out the user
+	/// </summary>
 	private async void Logout()
 	{
 		var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;

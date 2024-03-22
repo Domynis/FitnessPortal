@@ -1,4 +1,4 @@
-﻿namespace FitnessPortal.Services
+﻿namespace FitnessPortal.Utils
 {
     /// <summary>
     /// Utility class for calculating total kilocalories based on kilocalories per 100 grams and quantity.
@@ -13,7 +13,7 @@
         /// <returns>Total kilocalories for the specified quantity of the food item.</returns>
         public static double Calc(double kcalPer100g, double quantity)
         {
-            return (quantity * kcalPer100g) / 100;
+            return quantity * kcalPer100g / 100;
         }
     }
 }

@@ -2,7 +2,7 @@
 using FitnessPortal.Data;
 using FitnessPortal.Data.DTOs;
 using FitnessPortal.Data.Entities;
-using FitnessPortal.Services;
+using FitnessPortal.Utils;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -48,6 +48,10 @@ namespace FitnessPortal.Services
                     throw new InvalidDataException("Trying to update user that doesn't exist.");
                 }
             }
+            else if (_context.Users.Where(x => x.UserName.Equals(user.UserName)).FirstOrDefault() != null)
+            {
+                throw new InvalidDataException("UserName is not unique! Choose another one!");
+            }
             else
             {
                 _context.Users.Add(user);
@@ -68,10 +72,10 @@ namespace FitnessPortal.Services
             var model = userDetails.ID != Guid.Empty ? _context.UsersDetails.Where(x => x.ID == userDetails.ID).FirstOrDefault() : userDetails;
 
             // Update the user details properties
-            if(userDetails.ID != Guid.Empty)
+            if (userDetails.ID != Guid.Empty)
             {
                 var existingUserDetails = _context.UsersDetails.Where(x => x.ID == userDetails.ID).FirstOrDefault();
-                if(existingUserDetails != null)
+                if (existingUserDetails != null)
                 {
                     existingUserDetails.FirstName = userDetails.FirstName;
                     existingUserDetails.LastName = userDetails.LastName;

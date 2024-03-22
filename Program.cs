@@ -23,13 +23,14 @@ builder.Services.AddAuthenticationCore();
 builder.Services.AddAuthorization();
 builder.Services.AddOptions();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<IUserAccountService, UserAccountService>();
-builder.Services.AddScoped<IFoodService, FoodService>();
-builder.Services.AddScoped<IFoodJournalService, FoodJournalService>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthentication();
 
+builder.Services.AddScoped<IUserAccountService, UserAccountService>();
+builder.Services.AddScoped<IFoodService, FoodService>();
+builder.Services.AddScoped<IFoodJournalService, FoodJournalService>();
 // Add Entity Framework Core DbContext for the application
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 try
 {
